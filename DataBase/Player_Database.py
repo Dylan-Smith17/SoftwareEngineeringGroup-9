@@ -103,3 +103,76 @@ while True:
 
 write_data_to_json(readAll())
 
+import socket
+import json
+
+
+#Socket sending Json data
+def send_data_over_udp(json_data, host='localhost', port=7500):
+    # Create a UDP socket
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        # Convert JSON data to bytes
+        json_bytes = json.dumps(json_data).encode('utf-8')
+        # Send data
+        sock.sendto(json_bytes, (host, port))
+
+
+json_data = [
+    {"id": 1, "codename": "Opus"},
+    {"id": 357735, "codename": "Biggie Smalls"},
+    {"id": 357735, "codename": "test 2"},
+    {"id": 13556, "codename": "bobby"},
+    {"id": 357735, "codename": "test3"},
+    {"id": 638895, "codename": "test4"},
+    {"id": 650463, "codename": "uark wifi"},
+    {"id": 420667, "codename": "test4"}
+]
+# Send JSON data over UDP
+send_data_over_udp(json_data)
+
+#menu implementation
+#add player 
+def addPlayer(playerName):
+    supabase.table('player').insert({'id': random_id(), 'codename': playerName}).execute()
+    print(playerName + ' added.')
+
+#get/print player
+
+def getPlayer(playerName):
+    result = supabase.table('player').select('*').eq('codename', '=', playerName).execute()
+    print(result)
+
+
+
+#get/print by player ID
+
+def getId(playerId):
+    result = supabase.table('player').select('*').eq('id', playerId).execute()
+    print(result)
+
+#delete player by NAME
+
+def deletePlayer(playerName):
+    result = supabase.table('player').delete().eq('codename', playerName).execute()
+    print(f"Player {playerName} deleted.")
+
+#Delete player by ID
+    
+def deleteId(playerId):
+    result = supabase.table('player').delete().eq('id', playerId).execute()
+    print(f"Player with ID {playerId} deleted.")
+
+#Read all players from database
+
+def readAll():
+    print('begin')
+    result = supabase.table('player').select('*').execute()
+    print(result)
+    print('end')
+
+
+
+
+
+
+

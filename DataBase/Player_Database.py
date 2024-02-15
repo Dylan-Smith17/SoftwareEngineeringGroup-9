@@ -132,38 +132,6 @@ json_data = [
 # Send JSON data over UDP
 send_data_over_udp(json_data)
 
-#menu implementation
-#add player 
-def addPlayer(playerName):
-    supabase.table('player').insert({'id': random_id(), 'codename': playerName}).execute()
-    print(playerName + ' added.')
-
-#get/print player
-
-def getPlayer(playerName):
-    result = supabase.table('player').select('*').eq('codename', '=', playerName).execute()
-    print(result)
-
-
-
-#get/print by player ID
-
-def getId(playerId):
-    result = supabase.table('player').select('*').eq('id', playerId).execute()
-    print(result)
-
-#delete player by NAME
-
-def deletePlayer(playerName):
-    result = supabase.table('player').delete().eq('codename', playerName).execute()
-    print(f"Player {playerName} deleted.")
-
-#Delete player by ID
-    
-def deleteId(playerId):
-    result = supabase.table('player').delete().eq('id', playerId).execute()
-    print(f"Player with ID {playerId} deleted.")
-
 #Read all players from database
 
 def readAll():

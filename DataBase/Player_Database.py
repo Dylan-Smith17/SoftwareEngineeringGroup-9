@@ -1,5 +1,4 @@
 import json, re
-import socket
 import random
 from dotenv import load_dotenv
 load_dotenv()
@@ -19,6 +18,7 @@ def addPlayer():
     playerID = input("Enter the player ID: ")
     supabase.table('player').insert({'id': playerID, 'codename': playerName}).execute()
     print(playerName + ' added.')
+    write_data_to_json(readAll())
 
 def getPlayer(playerName):
     print(supabase.table('player').select('*').eq('codename',playerName).execute())
@@ -66,7 +66,17 @@ def menu():
     print("6. Read all in database")
     print("7. Exit")
 
-
+def random_id():
+    p = "0123456789"
+    temp = ''.join(random.choice(p) for _ in range(6))
+    temp_id = int(temp)
+    data = read_json_file('data.json')
+    temp_id = 357735
+    for d in data:
+        if(int(d['id']) == temp_id):
+            while temp_id == int(d['id']):
+                temp_id= ''.join(random.choice(p) for _ in range(6))
+    return temp_id
 
 while True:
     menu()
@@ -122,7 +132,39 @@ json_data = [
 # Send JSON data over UDP
 send_data_over_udp(json_data)
 
+#menu implementation
+#add player 
+def addPlayer(playerName):
+    supabase.table('player').insert({'id': random_id(), 'codename': playerName}).execute()
+    print(playerName + ' added.')
 
+#get/print player
+
+def getPlayer(playerName):
+    result = supabase.table('player').select('*').eq('codename', '=', playerName).execute()
+    print(result)
+
+
+
+#get/print by player ID
+
+def getId(playerId):
+    result = supabase.table('player').select('*').eq('id', playerId).execute()
+    print(result)
+
+#delete player by NAME
+
+def deletePlayer(playerName):
+    result = supabase.table('player').delete().eq('codename', playerName).execute()
+    print(f"Player {playerName} deleted.")
+
+#Delete player by ID
+    
+def deleteId(playerId):
+    result = supabase.table('player').delete().eq('id', playerId).execute()
+    print(f"Player with ID {playerId} deleted.")
+
+#Read all players from database
 
 def readAll():
     print('begin')

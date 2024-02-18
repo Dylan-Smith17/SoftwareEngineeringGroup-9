@@ -23,9 +23,6 @@ send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 print(f"Broadcast socket for listening on {serverIP}:{broadcast_port}")
 print(f"Send socket up and ready to send messages to {serverIP}:{send_port}")
 
-print(f"Broadcast socket for listening on {serverIP}:{broadcast_port}")
-print(f"Send socket up and ready to send messages to {serverIP}:{send_port}")
-
 #######################################################################################
 #######################################################################################
 

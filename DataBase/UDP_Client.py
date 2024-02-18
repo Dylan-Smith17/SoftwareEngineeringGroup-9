@@ -1,27 +1,56 @@
+# UDP
+#
+# Team 9
+#
+# 02/18/24
+
 import socket
 
-msgFromClient = "Hello UDP Server"
-bytesToSend = str.encode(msgFromClient)
+serverIP = "0.0.0.0"    # this ip address is a general address to test on the same
+                        # machine. If you want to use server ip then us this
+                        # line of code
+                        # serverIP = "192.168.1.100"
+broadcast_port = 7500
+send_port = 7501
 
-# Replace with the actual IP address of your UDP server
-serverAddress = ("192.168.1.100", 7500)
+# Set up broadcast socket for listening
+broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+broadcast_socket.bind((serverIP, broadcast_port))
 
-# Create a UDP socket at the client side
-UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+# Set up sending socket
+send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-try:
-    # Send the message to the server using the created UDP socket
-    UDPClientSocket.sendto(bytesToSend, serverAddress)
+print(f"Broadcast socket for listening on {serverIP}:{broadcast_port}")
+print(f"Send socket up and ready to send messages to {serverIP}:{send_port}")
 
-    # Receive the response from the server
-    msgFromServer, serverAddress = UDPClientSocket.recvfrom(1024)
+print(f"Broadcast socket for listening on {serverIP}:{broadcast_port}")
+print(f"Send socket up and ready to send messages to {serverIP}:{send_port}")
 
-    # Decode the received bytes into a string
-    msg = "Message from Server: {}".format(msgFromServer.decode('utf-8'))
-    print(msg)
+#######################################################################################
+#######################################################################################
 
-except Exception as e:
-    print("Error:", e)
+# EXAMPLE EXAMPLE EXAMPLE
+# EXAMPLE EXAMPLE EXAMPLE
+def send_info_to_server(info):
+    # Sending information to the server
+    send_socket.sendto(info.encode(), (serverIP, send_port))
 
-finally:
-    UDPClientSocket.close()
+# Example: Call the function from another file
+info_to_send = "Hello from client"
+send_info_to_server(info_to_send)
+# EXAMPLE EXAMPLE EXAMPLE
+# EXAMPLE EXAMPLE EXAMPLE
+
+#######################################################################################
+#######################################################################################
+
+while True:
+    # Listening for broadcast messages
+    data, server_address = broadcast_socket.recvfrom(1024)
+    print(f"Received broadcast message from {server_address}: {data.decode()}")
+
+
+
+
+
+

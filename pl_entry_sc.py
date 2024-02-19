@@ -4,14 +4,16 @@ from tkinter import messagebox
 import socket
 import json
 import random
+import sys
+import os
+cwd = os.getcwd()
+sys.path.insert(0, cwd+'/DataBase')
+import Player_Database
 from tkinter import messagebox, ttk
 
-# Placeholder for database connection (replace with actual database code)
-def add_player_to_database(player_name, team):
-    print(f"Adding {player_name} to {team}")
-    # Here you would have the code to insert the player into the database
-    # For now, it's just a print statement
-    # Example: database.insert_player(player_name, team)
+
+def add_player_to_database(player_name, id):
+    Player_Database.addPlayer(player_name, id)
 
 # Placeholder for UDP socket communication (replace with actual UDP code)
 def send_equipment_code_via_udp(player_name, equipment_code):
@@ -59,15 +61,21 @@ class PlayerEntryScreen(tk.Tk):
     def add_player(self, team):
         player_name = self.player_name_entry.get()
         if player_name:
-            player_id = f"ID-{random.randint(100, 999)}"
+            # player_id = f"ID-{random.randint(100, 999)}"
+            player_id = random.randint(100, 999)
             # Insert the player into the treeview
             self.teams[team].insert('', 'end', values=(player_name, player_id))
 
             # Clear the entry field for the next input
             self.player_name_entry.delete(0, tk.END)
+            add_player_to_database(player_name,player_id)
         else:
             messagebox.showwarning("Warning", "Player name cannot be empty.")
 
 if __name__ == "__main__":
     app = PlayerEntryScreen()
     app.mainloop()
+
+Player_Database.write_data_to_json(Player_Database.readAll())
+
+#sudo apt-get install python3-tk

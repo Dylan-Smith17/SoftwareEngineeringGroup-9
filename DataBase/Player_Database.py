@@ -22,8 +22,15 @@ def addPlayer(playerName, playerID):
 def getPlayer(playerName):
     print(supabase.table('player').select('*').eq('codename',playerName).execute())
 
-def getId(id):
-    print(supabase.table('player').select('*').eq('id',id).execute())
+# def getId(id):
+#     print(supabase.table('player').select('*').eq('id',id).execute())
+
+def get_by_id(id):
+    codename = supabase.table('player').select('codename').eq('id',id).execute()
+    temp = str(codename)
+    temp = temp[20:]
+    temp = temp[:-14]
+    return temp
 
 def deletePlayer(playerName):
     print(supabase.table('player').delete().eq('codename',playerName).execute())

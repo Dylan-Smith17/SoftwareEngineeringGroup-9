@@ -1,4 +1,5 @@
-# Splash and Entry Player Screen Readme
+
+# Splash and Player Entry Screen Instructions
 
 ## Running the Scripts
 
@@ -27,14 +28,19 @@
      python3 spl_sc.py
      ```
 
+   - Finally, run the game clock script:
+
+     ```bash
+     python3 game_clock.py
+     ```
+
 3. Game Clock:
-   - The game clock will start automatically when the Player Entry Screen closes.
+   - The game clock script (`game_clock.py`) adds an audio countdown experience before the game begins. It includes a 30-second initial countdown, playing random audio tracks using the `playsound` library. Afterward, it transitions to a 6-minute game duration countdown.
 
 ## Code Explanation
 
-The provided Python scripts include a Player Entry Screen and a Splash Screen for a Laser Tag game. The Player Entry Screen allows adding players to Red and Green teams, storing data in a database. The Splash Screen displays the game logo.
+The game clock script (`game_clock.py`) uses the `playsound` library to play random audio tracks, signaling events during the countdown. The countdown consists of two phases: a 30-second initial countdown and a 6-minute game duration countdown.
 
 Ensure to replace any placeholder UDP code with the actual implementation for sending equipment codes via UDP in the `send_equipment_code_via_udp` function.
 
 Feel free to contact the development team for any further assistance on how to run the code.
-

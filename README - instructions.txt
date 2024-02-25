@@ -51,3 +51,19 @@
 
 7. Contact the Team if something is not clear enough :
    - Feel free to contact the development team for any further assistance on how to run the code.
+
+Software Engineering Group #9
+
+Dylan-Smith17 -> Dylan Smith
+
+BulgarianMineShaft -> Evan Ayres
+
+jcmirandaz -> J.C Mirandaz
+
+ajquinta -> Jacobi Quintanilla
+
+AngelP17 -> Angel Pinzon
+
+bem012 -> Blaze Moore
+
+EkalbDlonra -> Blake Arnold

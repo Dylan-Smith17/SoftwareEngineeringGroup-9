@@ -1,5 +1,5 @@
 
-# Splash and Player Entry Screen Instructions
+# Code Description - README
 
 ## Running the Scripts
 
@@ -14,33 +14,40 @@
      pip install python-dotenv
      ```
 
-2. Run Scripts:
+2. Run Player Entry Screen Script:
    - Open a terminal and navigate to the directory containing the script files.
-   - Run the following commands:
+   - Run the following command:
 
      ```bash
      python3 pl_entry_sc.py
      ```
 
+   - Follow on-screen instructions for player entry.
+
+3. Run Splash Screen Script:**
    - After the Player Entry Screen closes, run:
 
      ```bash
      python3 spl_sc.py
      ```
 
+   - Follow any on-screen instructions or wait for the splash screen to complete.
+
+4. Run Game Clock Script:**
    - Finally, run the game clock script:
 
      ```bash
      python3 game_clock.py
      ```
 
-3. Game Clock:
    - The game clock script (`game_clock.py`) adds an audio countdown experience before the game begins. It includes a 30-second initial countdown, playing random audio tracks using the `playsound` library. Afterward, it transitions to a 6-minute game duration countdown.
 
-## Code Explanation
+5. DP_Client.py and UDP_Server.py:
+   - These scripts contain functions for the client-side and server-side implementation, respectively.
+   - Detailed function descriptions, including parameters, return values, and examples, can be found inside these files.
 
-The game clock script (`game_clock.py`) uses the `playsound` library to play random audio tracks, signaling events during the countdown. The countdown consists of two phases: a 30-second initial countdown and a 6-minute game duration countdown.
+6. Replace Placeholder UDP Code:
+   - Ensure to replace any placeholder UDP code with the actual implementation for sending equipment codes via UDP in the `send_equipment_code_via_udp` function.
 
-Ensure to replace any placeholder UDP code with the actual implementation for sending equipment codes via UDP in the `send_equipment_code_via_udp` function.
-
-Feel free to contact the development team for any further assistance on how to run the code.
+7. Contact the Team if something is not clear enough :
+   - Feel free to contact the development team for any further assistance on how to run the code.

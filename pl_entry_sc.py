@@ -36,9 +36,17 @@ class PlayerEntryScreen(tk.Tk):
         self.create_team_table('Red Team', 'red')
         self.create_team_table('Green Team', 'green')
 
-        # Entry for player names
+        # Label and entry for player names
+        self.player_name_label = tk.Label(self, text="Player Name:")
+        self.player_name_label.pack(pady=10)
         self.player_name_entry = tk.Entry(self, width=50)
-        self.player_name_entry.pack(pady=20)
+        self.player_name_entry.pack(pady=10)
+
+        # Label and entry for player IDs
+        self.player_id_label = tk.Label(self, text="Player ID:")
+        self.player_id_label.pack(pady=10)
+        self.player_id_entry = tk.Entry(self, width=50)
+        self.player_id_entry.pack(pady=10)
 
         # Buttons for adding players
         self.add_red_player_button = tk.Button(self, text="Add to Red Team", command=lambda: self.add_player('Red Team'))
@@ -60,22 +68,24 @@ class PlayerEntryScreen(tk.Tk):
 
     def add_player(self, team):
         player_name = self.player_name_entry.get()
-        if player_name:
+        player_id = self.player_id_entry.get()
+        if player_name and player_id:
             # player_id = f"ID-{random.randint(100, 999)}"
-            player_id = random.randint(100, 999)
             # Insert the player into the treeview
             self.teams[team].insert('', 'end', values=(player_name, player_id))
 
             # Clear the entry field for the next input
             self.player_name_entry.delete(0, tk.END)
-            add_player_to_database(player_name,player_id)
+            self.player_id_entry.delete(0, tk.END)
+            if(Player_Database.get_by_id(player_id) == ''):
+                add_player_to_database(player_name,player_id)
         else:
-            messagebox.showwarning("Warning", "Player name cannot be empty.")
+            messagebox.showwarning("Warning", "Field cannot be empty.")
 
 if __name__ == "__main__":
     app = PlayerEntryScreen()
     app.mainloop()
 
-Player_Database.write_data_to_json(Player_Database.readAll())
+Player_Database.write_data_to_json(Player_Database.readAll(), 'data.json')
 
 #sudo apt-get install python3-tk

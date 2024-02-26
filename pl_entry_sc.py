@@ -82,8 +82,18 @@ class PlayerEntryScreen(tk.Tk):
         else:
             messagebox.showwarning("Warning", "Field cannot be empty.")
 
+    def clear_all_players(self):
+        # Clear both team tables
+        for team_name, tree in self.teams.items():
+            tree.delete(*tree.get_children())
+
+        # Clear entry fields for new input
+        self.player_name_entry.delete(0, tk.END)
+        self.player_id_entry.delete(0, tk.END)
+
     def run_until_f5(self):
         self.bind('<F5>', lambda event: self.destroy())  # Bind F5 to close the window
+        self.bind('<F12>', lambda event: self.clear_all_players())  # Bind F12 to clear players
         self.mainloop()
 if __name__ == "__main__":
     app = PlayerEntryScreen()

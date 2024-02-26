@@ -82,9 +82,12 @@ class PlayerEntryScreen(tk.Tk):
         else:
             messagebox.showwarning("Warning", "Field cannot be empty.")
 
+    def run_until_f5(self):
+        self.bind('<F5>', lambda event: self.destroy())  # Bind F5 to close the window
+        self.mainloop()
 if __name__ == "__main__":
     app = PlayerEntryScreen()
-    app.mainloop()
+    app.run_until_f5()
 
 Player_Database.write_data_to_json(Player_Database.readAll(), 'data.json')
 

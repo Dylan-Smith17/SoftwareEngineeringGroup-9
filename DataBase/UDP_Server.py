@@ -10,7 +10,6 @@ import socket
 import selectors
 
 def send_info_to_client(info, broadcast_socket, broadcast_port):
-<<<<<<< HEAD
     try:
         # Check if info is blank
         if not info:
@@ -30,37 +29,6 @@ def receive_data(sock, mask):
     try:
         data, client_address = sock.recvfrom(1024)
         print(f"Received message from {client_address}: {data.decode()}")
-=======
-    # Sends information to clients using the broadcast socket.
-    #
-    # Parameters:
-    # info (str): The information to be sent.
-    # broadcast_socket (socket.socket): The broadcast socket for sending messages.
-    # broadcast_port (int): The port on which the broadcast messages will be sent.
-    #
-    # Returns:
-    # None
-
-    # Sending information to clients using the broadcast socket
-    broadcast_socket.sendto(info.encode(), ('<broadcast>', broadcast_port))
-
-def receive_data(sock, mask):
-    # Function to receive data from a socket and process it accordingly.
-    #
-    # This function receives data from the specified socket and prints the received message
-    # along with the client's address. It also provides examples of processing the received
-    # data and broadcasting responses to all clients based on specific conditions.
-    #
-    # Parameters:
-    # sock (socket.socket): The socket from which to receive data.
-    # mask (int): The event mask.
-    #
-    # Returns:
-    # None
-
-    data, client_address = sock.recvfrom(1024)
-    print(f"Received message from {client_address}: {data.decode()}")
->>>>>>> 9bbfdf71f9b011635da06743ef6d89f5ccf1cebb
 
         # Example
         if data.decode() == "hello":

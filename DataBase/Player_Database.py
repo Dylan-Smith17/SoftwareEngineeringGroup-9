@@ -8,23 +8,29 @@ from Player import Player
 from supabase import create_client
 
 load_dotenv()
+cwd = os.getcwd()
 
 url = os.environ.get("SUPABASE_URL")
 key = os.environ.get("SUPABASE_KEY")
 supabase = create_client(url, key)
 
-def addPlayer():
-    playerName = input("Enter the player name: ")
-    playerID = input("Enter the player ID: ")
+def addPlayer(playerName, playerID):
+    playerName.replace("'","/'")
     supabase.table('player').insert({'id': playerID, 'codename': playerName}).execute()
-    print(playerName + ' added.')
-    write_data_to_json(readAll())
+    write_data_to_json(readAll(), 'data.json')
 
 def getPlayer(playerName):
     print(supabase.table('player').select('*').eq('codename',playerName).execute())
 
-def getId(id):
-    print(supabase.table('player').select('*').eq('id',id).execute())
+# def getId(id):
+#     print(supabase.table('player').select('*').eq('id',id).execute())
+
+def get_by_id(id):
+    codename = supabase.table('player').select('codename').eq('id',id).execute()
+    temp = str(codename)
+    temp = temp[20:]
+    temp = temp[:-14]
+    return temp
 
 def deletePlayer(playerName):
     print(supabase.table('player').delete().eq('codename',playerName).execute())
@@ -41,21 +47,24 @@ def readAll():
 
 
 
-def write_data_to_json(string):
+def write_data_to_json(string, filename):
     start_index = string.index("[")
     end_index = string.index("]", start_index) +1
     data_string = string[start_index:end_index]
-    
     data_string = data_string.replace("'", '"')
+    #data_string = re.sub(r"(?<!codename': )'", '"', data_string)
+    print(data_string)
     data = json.loads(data_string)
     
-    with open('data.json', 'w') as file:
+    with open(filename, 'w') as file:
         json.dump(data, file)
 
 def read_json_file(filename):
     with open(filename, 'r') as file:
         data = json.load(file)
     return data
+
+
 
 def menu():
     print("1. Add Player")
@@ -66,44 +75,47 @@ def menu():
     print("6. Read all in database")
     print("7. Exit")
 
-def random_id():
-    p = "0123456789"
-    temp = ''.join(random.choice(p) for _ in range(6))
-    temp_id = int(temp)
-    data = read_json_file('data.json')
-    temp_id = 357735
-    for d in data:
-        if(int(d['id']) == temp_id):
-            while temp_id == int(d['id']):
-                temp_id= ''.join(random.choice(p) for _ in range(6))
-    return temp_id
 
-while True:
-    menu()
-    choice = input("Enter your choice: ")
-    if choice == '1':
-        addPlayer() # Call addPlayer without any arguments
-    elif choice == '2':
-        playerName = input("Enter the player name: ")
-        getPlayer(playerName)
-    elif choice == '3':
-        id = input("Enter the player ID: ")
-        getId(id)
-    elif choice == '4':
-        playerName = input("Enter the player name: ")
-        deletePlayer(playerName)
-    elif choice == '5':
-        id = input("Enter the player ID: ")
-        deleteId(id)
-    elif choice == '6':
-        readAll()
-    elif choice == '7':
-        break
-    else:
-        print("Invalid choice. Please enter a number between 1 and 7.")
+# def random_id():
+#     p = "0123456789"
+#     temp = ''.join(random.choice(p) for _ in range(6))
+#     temp_id = int(temp)
+#     data = read_json_file('data.json')
+#     temp_id = 357735
+#     for d in data:
+#         if(int(d['id']) == temp_id):
+#             while temp_id == int(d['id']):
+#                 temp_id= ''.join(random.choice(p) for _ in range(6))
+#     return temp_id
+
+# while True:
+#     menu()
+#     choice = input("Enter your choice: ")
+#     if choice == '1':
+#         name = input('Enter name: ')
+#         id = input('Enter id: ')
+#         addPlayer(name, id) # Call addPlayer without any arguments
+#     elif choice == '2':
+#         playerName = input("Enter the player name: ")
+#         getPlayer(playerName)
+#     elif choice == '3':
+#         id = input("Enter the player ID: ")
+#         get_by_id(id)
+#     elif choice == '4':
+#         playerName = input("Enter the player name: ")
+#         deletePlayer(playerName)
+#     elif choice == '5':
+#         id = input("Enter the player ID: ")
+#         deleteId(id)
+#     elif choice == '6':
+#         readAll()
+#     elif choice == '7':
+#         break
+#     else:
+#         print("Invalid choice. Please enter a number between 1 and 7.")
 
 
-write_data_to_json(readAll())
+
 
 import socket
 import json
@@ -134,11 +146,11 @@ send_data_over_udp(json_data)
 
 #Read all players from database
 
-def readAll():
-    print('begin')
-    result = supabase.table('player').select('*').execute()
-    print(result)
-    print('end')
+# def readAll():
+#     print('begin')
+#     result = supabase.table('player').select('*').execute()
+#     print(result)
+#     print('end')
 
 
 

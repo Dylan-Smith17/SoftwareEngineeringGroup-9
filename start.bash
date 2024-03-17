@@ -1,9 +1,10 @@
 #!/bin/bash 
+sudo apt install python3-pip
 sudo apt-get install python3-tk
 sudo apt-get install python3-tk python3-pil python3-pil.imagetk
 pip install playsound Pillow
 sudo apt-get install python3-pol python3-pil.imagetk
-sudo apt install python3-pip
+
 pip install supabase
 pip install python-dotenv
 pip install playsound

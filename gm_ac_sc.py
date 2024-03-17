@@ -3,7 +3,6 @@ import tkinter as tk
 from tkinter import Label, Frame, StringVar
 import threading
 from queue import Queue
-#
 import os
 from tkinter import messagebox
 import socket
@@ -75,11 +74,15 @@ class PlayerActionScreen(tk.Tk):
         self.frameEventBoxLeft.grid(row=1, column=0, sticky="nsew")
         self.frameEventBoxCenter.grid(row=1, column=1, sticky="nsew")
         self.frameEventBoxRight.grid(row=1, column=2, sticky="nsew")
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+
 
     def init_designations(self):
         # Creates designation labels to display text
-        Label(self.frameRed, text="ALPHA RED", bg="black", font=self.helvetica_Medium, fg="red").grid(row=0, column=0, sticky="e")
-        Label(self.frameGreen, text="ALPHA GREEN", bg="black", font=self.helvetica_Medium, fg="green").grid(row=0, column=0, sticky="w")
+        Label(self.frameRed, text="ALPHA RED", bg="black", font=self.helvetica_Medium, fg="red").grid(row=0, column=0, sticky="nsew")
+        Label(self.frameGreen, text="ALPHA GREEN", bg="black", font=self.helvetica_Medium, fg="green").grid(row=0, column=0, sticky="nsew")
         Label(self.frameEventBoxCenter, text="PHOTON EVENTS", bg="black", font=self.helvetica_Medium, fg="white").grid(row=0, column=1, sticky="new")
 
     def start_timer(self):

@@ -10,45 +10,40 @@ import socket
 import selectors
 
 def send_info_to_client(info, broadcast_socket, broadcast_port):
-    # Sends information to clients using the broadcast socket.
-    #
-    # Parameters:
-    # info (str): The information to be sent.
-    # broadcast_socket (socket.socket): The broadcast socket for sending messages.
-    # broadcast_port (int): The port on which the broadcast messages will be sent.
-    #
-    # Returns:
-    # None
+    try:
+        # Check if info is blank
+        if not info:
+            raise ValueError("Info cannot be blank")
 
-    # Sending information to clients using the broadcast socket
-    broadcast_socket.sendto(info.encode(), ('<broadcast>', broadcast_port))
+        # Sending information to clients using the broadcast socket
+        broadcast_socket.sendto(info.encode(), ('<broadcast>', broadcast_port))
+
+    except ValueError as ve:
+        print(f"Error: {ve}")
+    except socket.error as se:
+        print(f"Socket error: {se}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 def receive_data(sock, mask):
-    # Function to receive data from a socket and process it accordingly.
-    #
-    # This function receives data from the specified socket and prints the received message
-    # along with the client's address. It also provides examples of processing the received
-    # data and broadcasting responses to all clients based on specific conditions.
-    #
-    # Parameters:
-    # sock (socket.socket): The socket from which to receive data.
-    # mask (int): The event mask.
-    #
-    # Returns:
-    # None
+    try:
+        data, client_address = sock.recvfrom(1024)
+        print(f"Received message from {client_address}: {data.decode()}")
 
-    data, client_address = sock.recvfrom(1024)
-    print(f"Received message from {client_address}: {data.decode()}")
-
-    # Example
-    if data.decode() == "hello":
+        # Example
+        if data.decode() == "hello":
             # Broadcast "Hello there" to all clients
             send_info_to_client("Hello there", broadcast_socket, broadcast_port)
 
-    # Example
-    if data.decode() == "hi":
+        # Example
+        if data.decode() == "hi":
             # Broadcast "Hello there" to all clients
             send_info_to_client("Sup", broadcast_socket, broadcast_port)
+
+    except socket.error as se:
+        print(f"Socket error: {se}")
+    except Exception as e:
+        print(f"An error occurred while receiving data: {e}")
 
 # Set up broadcast socket
 broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -67,7 +62,13 @@ receive_socket.bind(("", receive_port))
 selector = selectors.DefaultSelector()
 selector.register(receive_socket, selectors.EVENT_READ, receive_data)
 
-while True:
-    for key, events in selector.select():
-        callback = key.data
-        callback(key.fileobj, events)
+try:
+    while True:
+        for key, events in selector.select():
+            callback = key.data
+            callback(key.fileobj, events)
+except KeyboardInterrupt:
+    print("Receiver terminated by user.")
+finally:
+    broadcast_socket.close()
+    receive_socket.close()

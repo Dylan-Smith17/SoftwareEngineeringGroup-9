@@ -10,6 +10,4 @@ pip install playsound
 pip install Pillow
 python3 spl_sc.py
 python3 pl_entry_sc.py
-# when player entry screen closes, start game clock
-python3 Game_Clock.py
 python3 gm_ac_sc.py

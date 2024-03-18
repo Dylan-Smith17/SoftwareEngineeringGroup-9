@@ -20,7 +20,7 @@ sys.path.insert(0, cwd+'/DataBase')
 from tkinter import messagebox, ttk
 
 class PlayerActionScreen(tk.Tk):
-    def __init__(self, players, event_queue, closing_timer=6*60):
+    def __init__(self, players, event_queue, closing_timer=390):
         super().__init__()
         # Set window title, size, and background color
         self.title("The Actions of Photon!")
@@ -99,6 +99,11 @@ class PlayerActionScreen(tk.Tk):
         # Update the timer every second until it reaches zero
         if self.closing_timer >= 0:
             self.seconds.set(self.minute_second_conv(self.closing_timer))
+            if(self.closing_timer == 375):
+                t = threading.Thread(target=self.play_sound)
+                t.start()
+            if (self.closing_timer <= 365 and self.closing_timer >= 360):
+                time.sleep(.2)
             self.closing_timer -= 1
             self.after(1000, self.timer_update)
         else:

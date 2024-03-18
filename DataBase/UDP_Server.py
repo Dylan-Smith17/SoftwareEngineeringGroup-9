@@ -2,13 +2,27 @@
 #
 # Team 9
 #
-# 02/18/24
+# 03/17/24
 #
 # receiver.py
 
 import socket
 import selectors
 
+
+###################################################################################
+# Sends information to clients using the broadcast socket.
+#
+# Parameters:
+#------------
+# info (str): The information to be sent.
+# broadcast_socket (socket.socket): The broadcast socket for sending messages.
+# broadcast_port (int): The port on which the broadcast messages will be sent.
+#
+# Returns:
+#---------
+# None
+###################################################################################
 def send_info_to_client(info, broadcast_socket, broadcast_port):
     try:
         # Check if info is blank
@@ -25,6 +39,22 @@ def send_info_to_client(info, broadcast_socket, broadcast_port):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
+
+
+
+###################################################################################
+# Sends information to clients using the broadcast socket.
+#
+# Parameters:
+#------------
+# info (str): The information to be sent.
+# broadcast_socket (socket.socket): The broadcast socket for sending messages.
+# broadcast_port (int): The port on which the broadcast messages will be sent.
+#
+# Returns:
+#---------
+# None
+###################################################################################
 def receive_data(sock, mask):
     try:
         data, client_address = sock.recvfrom(1024)

@@ -2,12 +2,22 @@
 #
 # Team 9
 #
-# 02/18/24
+# 03/17/24
 #
 # sender.py
 
 import socket
 
+
+######################################################################################
+# Sends information to a server using UDP.
+#
+# Parameters
+#------------
+# info (str): The information to be sent.
+# serverIP (str): The IP address of the server.
+# send_port (int): The port on the server to which the information will be sent.
+######################################################################################
 def send_info_to_server(info, serverIP, send_port):
     try:
         # Check if info is blank
@@ -27,7 +37,26 @@ def send_info_to_server(info, serverIP, send_port):
         print(f"Socket error: {se}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+        
 
+
+
+######################################################################################
+# Function to receive information from the server using UDP broadcast.
+#
+# This function sets up a broadcast socket to listen for messages from the server
+# and prints the received message along with the server address.
+#
+# Note: Make sure `serverIP` is defined before calling this function.
+#
+# Parameters:
+#-----------
+# None
+#
+# Returns:
+#--------
+# None
+######################################################################################
 def receive_info_from_server(serverIP):
     try:
         broadcast_port = 7500

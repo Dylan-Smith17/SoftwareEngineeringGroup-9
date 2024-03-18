@@ -1,7 +1,41 @@
 
 # Code Description - README
 
-## Running the Scripts
+## Running the Scripts ##
+############################################################################################################
+1.) Clone the repository
+
+2.) Navigate to the repository file location, enter: chmod +x start.bash
+
+3.) enter: .stat /start.bash
+
+4.) enter y to download, this will download all the dependencies
+
+5.) If splash screen does not pop up do "pip install requests" and re-run the start.bash
+
+6.) Splash screen will pop up and close on its own
+
+7.) The player entry screen will pop up; populate with players by name and ID, select a team. F12 to delete
+    player entries, and F5 to close the screen, this will begin the timer and open the player action screen.
+
+8.) a 30 second countdown will begin in the console and in a pop-up. At 15s audio begins.
+
+9.) Player action screen will pop up with a 6 min timer, music will continue to play.
+############################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+## Running the Scripts (Old) ##
+## For reference only ##
 
 1. Install Dependencies:
    - Ensure you have Python 3 installed.
@@ -67,3 +101,4 @@ AngelP17 -> Angel Pinzon
 bem012 -> Blaze Moore
 
 EkalbDlonra -> Blake Arnold
+Bna002 -> Blake Arnold (dual accounts)

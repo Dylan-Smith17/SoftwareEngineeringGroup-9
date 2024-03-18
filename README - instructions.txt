@@ -7,11 +7,11 @@
 
 2.) Navigate to the repository file location, enter: chmod +x start.bash
 
-3.) enter: .stat /start.bash
+3.) enter into console: .stat /start.bash
 
-4.) enter y to download, this will download all the dependencies
+4.) enter into console: y    -> this will download all the dependencies
 
-5.) If splash screen does not pop up do "pip install requests" and re-run the start.bash
+5.) If splash screen does not pop up-> enter into concole: pip install requests -> and re-run the start.bash
 
 6.) Splash screen will pop up and close on its own
 

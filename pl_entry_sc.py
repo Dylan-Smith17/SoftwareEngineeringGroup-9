@@ -36,6 +36,8 @@ class PlayerEntryScreen(tk.Tk):
         self.create_team_table('Red Team', 'red')
         self.create_team_table('Green Team', 'green')
 
+        
+
         # Label and entry for player names
         self.player_name_label = tk.Label(self, text="Player Name:")
         self.player_name_label.pack(pady=10)
@@ -48,11 +50,24 @@ class PlayerEntryScreen(tk.Tk):
         self.player_id_entry = tk.Entry(self, width=50)
         self.player_id_entry.pack(pady=10)
 
+        # Label and entry for hardware IDs
+        self.equipment_id_label = tk.Label(self, text="Equipment ID:")
+        self.equipment_id_label.pack(pady=10)
+        self.equipment_id_entry = tk.Entry(self, width=50)
+        self.equipment_id_entry.pack(pady=10)
+
+        self.key_label = tk.Label(self, text= "f5 to start, f12 to clear all names")
+        self.key_label.pack(pady=10)
+
         # Buttons for adding players
         self.add_red_player_button = tk.Button(self, text="Add to Red Team", command=lambda: self.add_player('Red Team'))
         self.add_green_player_button = tk.Button(self, text="Add to Green Team", command=lambda: self.add_player('Green Team'))
         self.add_red_player_button.pack(side=tk.LEFT, padx=20)
         self.add_green_player_button.pack(side=tk.RIGHT, padx=20)
+
+
+
+        
 
     def create_team_table(self, team_name, team_color):
         frame = tk.LabelFrame(self, text=team_name, fg=team_color, labelanchor='n', padx=5, pady=5)
@@ -66,22 +81,42 @@ class PlayerEntryScreen(tk.Tk):
 
         self.teams[team_name] = tree  # Store the treeview in the teams dictionary
 
+    def no_forbiddens(self, id): 
+        forbidden_list = [7500, 7501, 202, 221, 53, 43]
+        for i in forbidden_list:
+            if id == i: return False
+        return True
+            
+        
+
     def add_player(self, team):
         player_name = self.player_name_entry.get()
         player_id = self.player_id_entry.get()
-        if player_name and player_id:
-            # player_id = f"ID-{random.randint(100, 999)}"
-            # Insert the player into the treeview
-            self.teams[team].insert('', 'end', values=(player_name, player_id))
+        equipment_id = self.equipment_id_entry.get()
+        if player_id.isdigit() and equipment_id.isdigit():
+                player_id = int(player_id)
+                equipment_id = int(equipment_id)
+                if self.no_forbiddens(player_id) and self.no_forbiddens(equipment_id): #check for ids that are not valid:
+                    # player_id = f"ID-{random.randint(100, 999)}"
+                    # Insert the player into the treeview
+                    self.teams[team].insert('', 'end', values=(player_name, player_id))
 
-            # Clear the entry field for the next input
-            self.player_name_entry.delete(0, tk.END)
-            self.player_id_entry.delete(0, tk.END)
-            if(Player_Database.get_by_id(player_id) == ''):
-                add_player_to_database(player_name,player_id)
+                    # Clear the entry field for the next input
+                    self.player_name_entry.delete(0, tk.END)
+                    self.player_id_entry.delete(0, tk.END)
+                    if(Player_Database.get_by_id(player_id) == ''):
+                        add_player_to_database(player_name,player_id)
+                        print(player_name + ' added to database')
+                        send_equipment_code_via_udp(player_name, equipment_id)
+                    else:
+                        print(player_name + ' retrieved from database')
+                else: messagebox.showwarning("Warning", "Invalid ID")
+                
+                
         else:
-            messagebox.showwarning("Warning", "Field cannot be empty.")
-
+            messagebox.showwarning("Warning", "Invalid ID.")
+    
+    
     def clear_all_players(self):
         # Clear both team tables
         for team_name, tree in self.teams.items():

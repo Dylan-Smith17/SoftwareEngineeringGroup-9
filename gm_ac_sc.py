@@ -96,7 +96,7 @@ class PlayerActionScreen(tk.Tk):
         self.timer_update()
         
     def play_sound(self):
-        x = random.randint(1, 6)
+        x = random.randint(1, 8)
         playsound(cwd + '/photon-main/photon_tracks/Track0' + str(x) + '.mp3')    
 
     def timer_update(self):
@@ -115,6 +115,9 @@ class PlayerActionScreen(tk.Tk):
 
     def minute_second_conv(self, seconds):
         # Convert seconds to minutes and seconds format
+        if(seconds > 360):
+            seconds -= 360
+            return f"{seconds:02d}"
         minutes = seconds // 60
         seconds %= 60
         return f"{minutes:02d}:{seconds:02d}"

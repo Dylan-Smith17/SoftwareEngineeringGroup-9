@@ -8,19 +8,40 @@ import sys
 import os
 cwd = os.getcwd()
 sys.path.insert(0, cwd+'/DataBase')
-import Player_Database
+import Player_Database, UDP_Client, UDP_Server
 from tkinter import messagebox, ttk
+import socket
 
+# Create the broadcast socket
+broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+broadcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 def add_player_to_database(player_name, id):
     Player_Database.addPlayer(player_name, id)
 
 # Placeholder for UDP socket communication (replace with actual UDP code)
 def send_equipment_code_via_udp(player_name, equipment_code):
+    """Sends player name and equipment code to the server via UDP.
+
+    Args:
+        player_name (str): Name of the player.
+        equipment_code (int): Equipment code for the player.
+    """
+
     print(f"Sending {player_name}'s equipment code {equipment_code} via UDP")
-    # Here you would have the code to send the equipment code via UDP
-    # For now, it's just a print statement
-    # Example: udp.send_equipment_code(player_name, equipment_code)
+
+    # Create a dictionary to store player data
+    data_to_send = {"player_name": player_name, "equipment_code": equipment_code}
+
+    # Convert data to JSON string
+    json_data = json.dumps(data_to_send)
+
+    # Specify server IP address
+    server_ip = "127.0.1.1"  # Replace with the actual server IP if needed
+
+    # Use UDP_Client.send_info_to_server to send the JSON data
+    UDP_Client.send_info_to_server(json_data, server_ip, 1024)
+
 
 class PlayerEntryScreen(tk.Tk):
     def __init__(self):
@@ -88,7 +109,6 @@ class PlayerEntryScreen(tk.Tk):
         return True
             
         
-
     def add_player(self, team):
         player_name = self.player_name_entry.get()
         player_id = self.player_id_entry.get()
@@ -107,7 +127,7 @@ class PlayerEntryScreen(tk.Tk):
                     if(Player_Database.get_by_id(player_id) == ''):
                         add_player_to_database(player_name,player_id)
                         print(player_name + ' added to database')
-                        send_equipment_code_via_udp(player_name, equipment_id)
+                        #send_equipment_code_via_udp(player_name, equipment_id)
                     else:
                         print(player_name + ' retrieved from database')
                 else: messagebox.showwarning("Warning", "Invalid ID")

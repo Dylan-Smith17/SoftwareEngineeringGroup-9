@@ -6,9 +6,10 @@ import json
 import random
 import sys
 import os
+from tkinter import simpledialog
 cwd = os.getcwd()
 sys.path.insert(0, cwd+'/DataBase')
-import Player_Database, UDP_Client, UDP_Server
+import Player_Database#, UDP_Client, UDP_Server
 from tkinter import messagebox, ttk
 import socket
 
@@ -40,7 +41,7 @@ def send_equipment_code_via_udp(player_name, equipment_code):
     server_ip = "127.0.1.1"  # Replace with the actual server IP if needed
 
     # Use UDP_Client.send_info_to_server to send the JSON data
-    UDP_Client.send_info_to_server(json_data, server_ip, 1024)
+    #UDP_Client.send_info_to_server(json_data, server_ip, 1024)
 
 
 class PlayerEntryScreen(tk.Tk):
@@ -60,10 +61,10 @@ class PlayerEntryScreen(tk.Tk):
         
 
         # Label and entry for player names
-        self.player_name_label = tk.Label(self, text="Player Name:")
-        self.player_name_label.pack(pady=10)
-        self.player_name_entry = tk.Entry(self, width=50)
-        self.player_name_entry.pack(pady=10)
+        # self.player_name_label = tk.Label(self, text="Player Name:")
+        # self.player_name_label.pack(pady=10)
+        # self.player_name_entry = tk.Entry(self, width=50)
+        # self.player_name_entry.pack(pady=10)
 
         # Label and entry for player IDs
         self.player_id_label = tk.Label(self, text="Player ID:")
@@ -90,6 +91,16 @@ class PlayerEntryScreen(tk.Tk):
         self.add_green_player_button.pack(side=tk.RIGHT, padx=20)
 
 
+    def show_popup(self):
+        root = tk.Tk()
+        root.withdraw()  # Hide the main window
+        user_input = simpledialog.askstring(title="New ID", prompt="Enter Codename :")
+        if user_input is None:  # User clicked 'Cancel'
+            user_input = ''
+        print("User entered: ", user_input)
+        return user_input
+
+
 
         
 
@@ -107,34 +118,27 @@ class PlayerEntryScreen(tk.Tk):
 
     def no_forbiddens(self, id): 
         forbidden_list = [7500, 7501, 202, 221, 53, 43]
+        
         for i in forbidden_list:
-            if id == i: return False
+            if id == i : return False
         return True
             
         
     def add_player(self, team):
-        player_name = self.player_name_entry.get()
         player_id = self.player_id_entry.get()
         equipment_id = self.equipment_id_entry.get()
         if player_id.isdigit() and equipment_id.isdigit():
                 player_id = int(player_id)
                 equipment_id = int(equipment_id)
-                if self.no_forbiddens(player_id) and self.no_forbiddens(equipment_id): #check for ids that are not valid:
-                    # player_id = f"ID-{random.randint(100, 999)}"
-                    # Insert the player into the treeview
-                    self.teams[team].insert('', 'end', values=(player_name, player_id))
-
-                    # Clear the entry field for the next input
-                    self.player_name_entry.delete(0, tk.END)
-                    self.player_id_entry.delete(0, tk.END)
-                    if(Player_Database.get_by_id(player_id) == ''):
-                        add_player_to_database(player_name,player_id)
-                        print(player_name + ' added to database')
-                        self.entered_label.config(text= player_name + ' added to database')
-                        #send_equipment_code_via_udp(player_name, equipment_id)
-                    else:
-                        print(player_name + ' retrieved from database')
-                        self.entered_label.config(text= player_name + ' retrieved from database')
+                if  self.no_forbiddens(player_id) and self.no_forbiddens(equipment_id): #check for ids that are not valid:
+                    if Player_Database.get_by_id(player_id) == '' : #if it's not a preexisting id
+                        player_name = self.show_popup()
+                        if player_name != '': #if the user typed in something
+                            self.teams[team].insert('', 'end', values=(player_name, player_id))
+                            add_player_to_database(player_name,player_id)
+                        
+                    else: 
+                        self.teams[team].insert('', 'end', values=(Player_Database.get_by_id(player_id), player_id))
                 else: messagebox.showwarning("Warning", "Invalid ID")
                 
                 

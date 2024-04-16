@@ -20,22 +20,34 @@ def addPlayer(playerName, playerID):
     write_data_to_json(readAll(), 'data.json')
 
 def getPlayer(playerName):
-    print(supabase.table('player').select('*').eq('codename',playerName).execute())
+    print('hi')
+    #print(supabase.table('player').select('*').eq('codename',playerName).execute())
+    codename = supabase.table('player').select('*').eq('codename',playerName).execute()
+    temp = str(codename)
+    temp = temp.split("data=")[1]
+    temp = temp[:2]
+    return temp
 
-# def getId(id):
-#     print(supabase.table('player').select('*').eq('id',id).execute())
+def getId(id):
+    print(supabase.table('player').select('*').eq('id',id).execute())
 
-def get_player_by_id(player_id):
-    # Query the database for the player with the given ID
-    result = supabase.table('player').select('codename').eq('id', player_id).execute()
-    # Check if the result contains any data
-    if result['count'] > 0:
-        # Extract the player's name from the result
-        player_name = result['data'][0]['codename']
-        return player_name
-    else:
-        # If no player with the given ID is found, return None
-        return None
+def get_by_id(id):
+    codename = supabase.table('player').select('codename').eq('id',id).execute()
+    temp = str(codename)
+    temp = temp[20:]
+    temp = temp[:-14]
+    return temp
+# def get_player_by_id(player_id):
+#     # Query the database for the player with the given ID
+#     result = supabase.table('player').select('codename').eq('id', player_id).execute()
+#     # Check if the result contains any data
+#     if result['count'] > 0:
+#         # Extract the player's name from the result
+#         player_name = result['data'][0]['codename']
+#         return player_name
+#     else:
+#         # If no player with the given ID is found, return None
+#         return 'None'
 
 def deletePlayer(playerName):
     print(supabase.table('player').delete().eq('codename',playerName).execute())
@@ -105,7 +117,7 @@ def menu():
 #         getPlayer(playerName)
 #     elif choice == '3':
 #         id = input("Enter the player ID: ")
-#         get_by_id(id)
+#         print("id: " + get_by_id(id))
 #     elif choice == '4':
 #         playerName = input("Enter the player name: ")
 #         deletePlayer(playerName)

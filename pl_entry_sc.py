@@ -57,6 +57,7 @@ class PlayerEntryScreen(tk.Tk):
         # Create Treeview for each team
         self.create_team_table('Red Team', 'red')
         self.create_team_table('Green Team', 'green')
+        self.eq_list = []
 
         
 
@@ -118,10 +119,14 @@ class PlayerEntryScreen(tk.Tk):
 
     def no_forbiddens(self, id): 
         forbidden_list = [7500, 7501, 202, 221, 53, 43]
-        
         for i in forbidden_list:
             if id == i : return False
         return True
+    def unq_eq(self, eq_id):
+        for i in self.eq_list:
+            if i == eq_id: return False
+        return True
+
             
         
     def add_player(self, team):
@@ -130,7 +135,7 @@ class PlayerEntryScreen(tk.Tk):
         if player_id.isdigit() and equipment_id.isdigit():
                 player_id = int(player_id)
                 equipment_id = int(equipment_id)
-                if  self.no_forbiddens(player_id) and self.no_forbiddens(equipment_id): #check for ids that are not valid:
+                if  self.no_forbiddens(player_id) and self.no_forbiddens(equipment_id) and self.unq_eq(equipment_id): #check for ids that are not valid and previous equipment ids entered:
                     if Player_Database.get_by_id(player_id) == '' : #if it's not a preexisting id
                         player_name = self.show_popup()
                         if player_name != '': #if the user typed in something
@@ -139,6 +144,7 @@ class PlayerEntryScreen(tk.Tk):
                         
                     else: 
                         self.teams[team].insert('', 'end', values=(Player_Database.get_by_id(player_id), player_id))
+                    self.eq_list.append(equipment_id)
                 else: messagebox.showwarning("Warning", "Invalid ID")
                 
                 

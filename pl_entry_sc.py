@@ -76,9 +76,12 @@ class PlayerEntryScreen(tk.Tk):
         self.equipment_id_label.pack(pady=10)
         self.equipment_id_entry = tk.Entry(self, width=50)
         self.equipment_id_entry.pack(pady=10)
+        
 
         self.key_label = tk.Label(self, text= "f5 to start, f12 to clear all names")
         self.key_label.pack(pady=10)
+        self.entered_label = tk.Label(self, text= "")
+        self.entered_label.pack(pady=10)
 
         # Buttons for adding players
         self.add_red_player_button = tk.Button(self, text="Add to Red Team", command=lambda: self.add_player('Red Team'))
@@ -127,9 +130,11 @@ class PlayerEntryScreen(tk.Tk):
                     if(Player_Database.get_by_id(player_id) == ''):
                         add_player_to_database(player_name,player_id)
                         print(player_name + ' added to database')
+                        self.entered_label.config(text= player_name + ' added to database')
                         #send_equipment_code_via_udp(player_name, equipment_id)
                     else:
                         print(player_name + ' retrieved from database')
+                        self.entered_label.config(text= player_name + ' retrieved from database')
                 else: messagebox.showwarning("Warning", "Invalid ID")
                 
                 

@@ -25,12 +25,17 @@ def getPlayer(playerName):
 # def getId(id):
 #     print(supabase.table('player').select('*').eq('id',id).execute())
 
-def get_by_id(id):
-    codename = supabase.table('player').select('codename').eq('id',id).execute()
-    temp = str(codename)
-    temp = temp[20:]
-    temp = temp[:-14]
-    return temp
+def get_player_by_id(player_id):
+    # Query the database for the player with the given ID
+    result = supabase.table('player').select('codename').eq('id', player_id).execute()
+    # Check if the result contains any data
+    if result['count'] > 0:
+        # Extract the player's name from the result
+        player_name = result['data'][0]['codename']
+        return player_name
+    else:
+        # If no player with the given ID is found, return None
+        return None
 
 def deletePlayer(playerName):
     print(supabase.table('player').delete().eq('codename',playerName).execute())

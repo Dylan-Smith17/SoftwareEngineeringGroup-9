@@ -152,16 +152,24 @@ class PlayerActionScreen(tk.Tk):
                 if str(player["id"]) == player_id:
                     return player["player_name"]
 
-    def update_scoreboard(self):
-        # Update the scores displayed on the GUI
-        self.update_scoreboard_designations(self.frameEventBoxLeft, self.alpha_red_score, "red")
-        self.update_scoreboard_designations(self.frameEventBoxRight, self.alpha_green_score, "green")
+def update_scoreboard(self):
+    # Sort players by their scores from highest to lowest
+    sorted_players = sorted(self.players["alpha_red_users"] + self.players["alpha_green_users"], key=lambda x: x["score"], reverse=True)
+    
+    # Update the scoreboard for both teams
+    self.update_scoreboard_designations(self.frameEventBoxLeft, sorted_players, "red")
+    self.update_scoreboard_designations(self.frameEventBoxRight, sorted_players, "green")
 
-    def update_scoreboard_designations(self, frame, score, color):
-        # Update the designations for displaying scores
-        for widget in frame.winfo_children():
-            widget.destroy()
-        Label(frame, text=score, bg="black", font="Helvetica 50", fg=color).grid(row=1, column=1, sticky="new")
+def update_scoreboard_designations(self, frame, sorted_players, color):
+    # Update the designations for displaying scores
+    for widget in frame.winfo_children():
+        widget.destroy()
+    
+    # Display player scores in the frame
+    for i, player in enumerate(sorted_players):
+        if player["color"] == color:
+            Label(frame, text=f"{player['player_name']}: {player['score']}", bg="black", font="Helvetica 12", fg=color).grid(row=i + 1, column=1, sticky="new")
+
 
     def add_events(self, event_string):
         # Add events to the event window and update the display

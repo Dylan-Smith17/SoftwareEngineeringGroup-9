@@ -20,7 +20,7 @@ import socket
 import json
 
 # Function to send data over UDP
-def send_data_over_udp(json_data, host='localhost', port=7500):
+def send_data_over_udp(json_data, host='192.168.1.100', port=7500):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         json_bytes = json.dumps(json_data).encode('utf-8')
         sock.sendto(json_bytes, (host, port))

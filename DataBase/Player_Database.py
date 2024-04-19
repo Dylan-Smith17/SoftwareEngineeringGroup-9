@@ -1,10 +1,8 @@
-import json, re
-import random
-from dotenv import load_dotenv
-load_dotenv()
-import ast 
+import json
 import os
-from Player import Player
+import random
+import re
+from dotenv import load_dotenv
 from supabase import create_client
 
 load_dotenv()
@@ -13,6 +11,9 @@ cwd = os.getcwd()
 url = os.environ.get("SUPABASE_URL")
 key = os.environ.get("SUPABASE_KEY")
 supabase = create_client(url, key)
+
+def get_supabase():
+    return supabase
 
 def addPlayer(playerName, playerID):
     playerName.replace("'","/'")

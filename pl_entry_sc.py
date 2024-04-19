@@ -9,39 +9,21 @@ import os
 from tkinter import simpledialog
 cwd = os.getcwd()
 sys.path.insert(0, cwd+'/DataBase')
-import Player_Database#, UDP_Client, UDP_Server
+import Player_Database
+
 from tkinter import messagebox, ttk
 import socket
+from UDP_Client import send_data_over_udp
+import json
+cwd = os.getcwd()
+sys.path.insert(0, cwd+'/DataBase')
+import Player_Database
 
-# Create the broadcast socket
-broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-broadcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-
-def add_player_to_database(player_name, id):
-    Player_Database.addPlayer(player_name, id)
-
-# Placeholder for UDP socket communication (replace with actual UDP code)
-def send_equipment_code_via_udp(player_name, equipment_code):
-    """Sends player name and equipment code to the server via UDP.
-
-    Args:
-        player_name (str): Name of the player.
-        equipment_code (int): Equipment code for the player.
-    """
-
-    print(f"Sending {player_name}'s equipment code {equipment_code} via UDP")
-
-    # Create a dictionary to store player data
-    data_to_send = {"player_name": player_name, "equipment_code": equipment_code}
-
-    # Convert data to JSON string
-    json_data = json.dumps(data_to_send)
-
-    # Specify server IP address
-    server_ip = "127.0.1.1"  # Replace with the actual server IP if needed
-
-    # Use UDP_Client.send_info_to_server to send the JSON data
-    #UDP_Client.send_info_to_server(json_data, server_ip, 1024)
+def read_json_file(filename):
+    print('reading file')
+    with open(filename, 'r') as file:
+        data = json.load(file)
+    return data
 
 
 class PlayerEntryScreen(tk.Tk):
@@ -57,15 +39,8 @@ class PlayerEntryScreen(tk.Tk):
         # Create Treeview for each team
         self.create_team_table('Red Team', 'red')
         self.create_team_table('Green Team', 'green')
-        self.eq_list = []
+        self.player_dict = {}
 
-        
-
-        # Label and entry for player names
-        # self.player_name_label = tk.Label(self, text="Player Name:")
-        # self.player_name_label.pack(pady=10)
-        # self.player_name_entry = tk.Entry(self, width=50)
-        # self.player_name_entry.pack(pady=10)
 
         # Label and entry for player IDs
         self.player_id_label = tk.Label(self, text="Player ID:")
@@ -91,7 +66,10 @@ class PlayerEntryScreen(tk.Tk):
         self.add_red_player_button.pack(side=tk.LEFT, padx=20)
         self.add_green_player_button.pack(side=tk.RIGHT, padx=20)
 
+    def add_player_to_database(self,player_name, id):
+        Player_Database.addPlayer(player_name, id)
 
+   
     def show_popup(self):
         root = tk.Tk()
         root.withdraw()  # Hide the main window
@@ -123,12 +101,17 @@ class PlayerEntryScreen(tk.Tk):
             if id == i : return False
         return True
     def unq_eq(self, eq_id):
-        for i in self.eq_list:
+        for i in self.player_dict.values():
             if i == eq_id: return False
         return True
 
             
-        
+    def save_player_data(self, player_dict, filename): #writes into json file
+        # Open the file in write mode with UTF-8 encoding for proper handling of various characters
+        with open(filename, 'w', encoding='utf-8') as f:
+            # Use json.dump to serialize the dictionary and write it to the file
+            json.dump(player_dict, f, indent=4)  # Optional indentation for readability
+
     def add_player(self, team):
         player_id = self.player_id_entry.get()
         equipment_id = self.equipment_id_entry.get()
@@ -140,11 +123,14 @@ class PlayerEntryScreen(tk.Tk):
                         player_name = self.show_popup()
                         if player_name != '': #if the user typed in something
                             self.teams[team].insert('', 'end', values=(player_name, player_id))
-                            add_player_to_database(player_name,player_id)
+                            self.add_player_to_database(player_name, player_id)
+                            self.player_dict.update({player_name:equipment_id})
                         
                     else: 
                         self.teams[team].insert('', 'end', values=(Player_Database.get_by_id(player_id), player_id))
-                    self.eq_list.append(equipment_id)
+                        self.player_dict.update({Player_Database.get_by_id(player_id):equipment_id})
+                    self.save_player_data(self.player_dict,'data.json')
+
                 else: messagebox.showwarning("Warning", "Invalid ID")
                 
                 
@@ -158,17 +144,22 @@ class PlayerEntryScreen(tk.Tk):
             tree.delete(*tree.get_children())
 
         # Clear entry fields for new input
-        self.player_name_entry.delete(0, tk.END)
         self.player_id_entry.delete(0, tk.END)
+        self.equipment_id_entry.delete(0, tk.END)
+        self.player_dict = {}
+        self.save_player_data(self.player_dict, 'data.json')
 
     def run_until_f5(self):
-        self.bind('<F5>', lambda event: self.destroy())  # Bind F5 to close the window
+        self.bind('<F5>', self.close_program)  # Bind F5 to close the window
         self.bind('<F12>', lambda event: self.clear_all_players())  # Bind F12 to clear players
         self.mainloop()
+
+    def close_program(self, event):
+        send_data_over_udp(read_json_file('data.json'))
+        self.destroy()  # Close the window
+        sys.exit()  # Terminate the program
 if __name__ == "__main__":
     app = PlayerEntryScreen()
     app.run_until_f5()
+    
 
-Player_Database.write_data_to_json(Player_Database.readAll(), 'data.json')
-
-#sudo apt-get install python3-tk

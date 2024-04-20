@@ -10,6 +10,7 @@ import json
 import random
 import sys
 from playsound import playsound
+
 # Get the current working directory and set path for database access
 cwd = os.getcwd()
 sys.path.insert(0, cwd+'/DataBase')
@@ -20,7 +21,7 @@ sys.path.insert(0, cwd+'/DataBase')
 from tkinter import messagebox, ttk
 
 class PlayerActionScreen(tk.Tk):
-    def __init__(self, players, event_queue, closing_timer=390):
+    def __init__(self, event_queue, closing_timer=390):
         super().__init__()
         # Set window title, size, and background color
         self.title("The Actions of Photon!")
@@ -43,7 +44,7 @@ class PlayerActionScreen(tk.Tk):
         self.closing_timer = closing_timer
 
         # Store player and event queue data
-        self.players = players
+        self.players = self.load_player_data()  # Modified to load player data from JSON
         self.event_queue = event_queue
 
         # Create the GUI layout
@@ -56,6 +57,16 @@ class PlayerActionScreen(tk.Tk):
         # Close the window after the timer expires
         self.window_timer()
 
+    def load_player_data(self):
+        # Load player data from data.json
+        try:
+            with open('data.json', 'r') as file:
+                players_data = json.load(file)
+        except FileNotFoundError:
+            messagebox.showerror("Error", "data.json file not found")
+            players_data = []
+        return players_data
+
     def create_gui(self):
         # Create frames for different sections of the GUI
         self.init_frames()
@@ -63,14 +74,17 @@ class PlayerActionScreen(tk.Tk):
         # Create designations to display text
         self.init_designations()
 
+        # Display player names in team windows (New functionality)
+        self.display_players()
+
     def init_frames(self):
         # Create frames for different sections of the GUI
-        self.frameRed = Frame(width=self.player_frame_y, height=self.player_frame_x, padx=20, pady=20, bg="black", highlightbackground="blue", highlightcolor="blue", highlightthickness="2")
-        self.frameGreen = Frame(width=self.player_frame_y, height=self.player_frame_x, padx=20, pady=20, bg="black", highlightbackground="blue", highlightcolor="blue", highlightthickness="2")
-        self.frameTimer = Frame(width=self.player_frame_y, height=self.player_frame_x, padx=70, pady=20, bg="black", highlightbackground="blue", highlightcolor="blue", highlightthickness="2")
-        self.frameEventBoxLeft = Frame(width=self.player_frame_y, height=self.player_frame_x, padx=20, pady=20, bg="black")
-        self.frameEventBoxCenter = Frame(width=self.player_frame_y, height=self.player_frame_x, padx=20, pady=20, bg="black")
-        self.frameEventBoxRight = Frame(width=self.player_frame_y, height=self.player_frame_x, padx=20, pady=20, bg="black")
+        self.frameRed = Frame(self, width=self.player_frame_y, height=self.player_frame_x, padx=20, pady=20, bg="black", highlightbackground="blue", highlightcolor="blue", highlightthickness="2")
+        self.frameGreen = Frame(self, width=self.player_frame_y, height=self.player_frame_x, padx=20, pady=20, bg="black", highlightbackground="blue", highlightcolor="blue", highlightthickness="2")
+        self.frameTimer = Frame(self, width=self.player_frame_y, height=self.player_frame_x, padx=70, pady=20, bg="black", highlightbackground="blue", highlightcolor="blue", highlightthickness="2")
+        self.frameEventBoxLeft = Frame(self, width=self.player_frame_y, height=self.player_frame_x, padx=20, pady=20, bg="black")
+        self.frameEventBoxCenter = Frame(self, width=self.player_frame_y, height=self.player_frame_x, padx=20, pady=20, bg="black")
+        self.frameEventBoxRight = Frame(self, width=self.player_frame_y, height=self.player_frame_x, padx=20, pady=20, bg="black")
 
         # Arrange frames in the grid layout
         self.frameRed.grid(row=0, column=0, sticky="nsew")
@@ -89,12 +103,18 @@ class PlayerActionScreen(tk.Tk):
         Label(self.frameGreen, text="ALPHA GREEN", bg="black", font=self.helvetica_Medium, fg="green").grid(row=0, column=0, sticky="nsew")
         Label(self.frameEventBoxCenter, text="PHOTON EVENTS", bg="black", font=self.helvetica_Medium, fg="white").grid(row=0, column=1, sticky="new")
 
+    def display_players(self):
+        # New method to display player names in team frames based on their data
+        for player in self.players:
+            team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen  # Simple team assignment logic
+            Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
+
     def start_timer(self):
         # Start a thread to update the timer
         self.seconds = StringVar()
         Label(self.frameTimer, textvariable=self.seconds, bg="black", font="Helvetica 50", fg="yellow").grid(row=0, column=1, sticky="n")
         self.timer_update()
-        
+
     def play_sound(self):
         x = random.randint(1, 8)
         playsound(cwd + '/photon-main/photon_tracks/Track0' + str(x) + '.mp3')    
@@ -152,24 +172,23 @@ class PlayerActionScreen(tk.Tk):
                 if str(player["id"]) == player_id:
                     return player["player_name"]
 
-def update_scoreboard(self):
-    # Sort players by their scores from highest to lowest
-    sorted_players = sorted(self.players["alpha_red_users"] + self.players["alpha_green_users"], key=lambda x: x["score"], reverse=True)
-    
-    # Update the scoreboard for both teams
-    self.update_scoreboard_designations(self.frameEventBoxLeft, sorted_players, "red")
-    self.update_scoreboard_designations(self.frameEventBoxRight, sorted_players, "green")
+    def update_scoreboard(self):
+        # Sort players by their scores from highest to lowest
+        sorted_players = sorted(self.players["alpha_red_users"] + self.players["alpha_green_users"], key=lambda x: x["score"], reverse=True)
+        
+        # Update the scoreboard for both teams
+        self.update_scoreboard_designations(self.frameEventBoxLeft, sorted_players, "red")
+        self.update_scoreboard_designations(self.frameEventBoxRight, sorted_players, "green")
 
-def update_scoreboard_designations(self, frame, sorted_players, color):
-    # Update the designations for displaying scores
-    for widget in frame.winfo_children():
-        widget.destroy()
-    
-    # Display player scores in the frame
-    for i, player in enumerate(sorted_players):
-        if player["color"] == color:
-            Label(frame, text=f"{player['player_name']}: {player['score']}", bg="black", font="Helvetica 12", fg=color).grid(row=i + 1, column=1, sticky="new")
-
+    def update_scoreboard_designations(self, frame, sorted_players, color):
+        # Update the designations for displaying scores
+        for widget in frame.winfo_children():
+            widget.destroy()
+        
+        # Display player scores in the frame
+        for i, player in enumerate(sorted_players):
+            if player["color"] == color:
+                Label(frame, text=f"{player['player_name']}: {player['score']}", bg="black", font="Helvetica 12", fg=color).grid(row=i + 1, column=1, sticky="new")
 
     def add_events(self, event_string):
         # Add events to the event window and update the display
@@ -202,4 +221,3 @@ if __name__ == '__main__':
     # Create and run the application
     app = PlayerActionScreen(player_data, event_queue)
     app.mainloop()
-

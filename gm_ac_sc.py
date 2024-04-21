@@ -22,15 +22,14 @@ from tkinter import messagebox, ttk
 
 
 class PlayerActionScreen(tk.Tk):
-    def __init__(self, event_queue, closing_timer=390):
+    def __init__(self, player_data, event_queue, closing_timer=390):
         super().__init__()
-        # Set window title, size, and background color
         self.title("The Actions of Photon!")
         self.geometry("1280x720")
         self.configure(background='grey')
         self.configure(bg="black")
 
-        # Define font styles
+# Define font styles
         self.helvetica_Small = ("Helvetica", 10, "bold")
         self.helvetica_Medium = ("Helvetica", 20, "bold")
         self.helvetica_Large = ("Helvetica", 30, "bold")
@@ -45,7 +44,7 @@ class PlayerActionScreen(tk.Tk):
         self.closing_timer = closing_timer
 
         # Store player and event queue data
-        self.players = self.load_player_data()  # Loads player data from JSON
+        self.players = player_data
         self.event_queue = event_queue
 
         # Create the GUI layout
@@ -126,9 +125,7 @@ class PlayerActionScreen(tk.Tk):
     def start_timer(self):
         # Start a thread to update the timer
         self.seconds = StringVar()
-        Label(self.frameTimer, textvariable=self.seconds, bg="black", font="Helvetica 50", fg="yellow").grid(row=0,
-                                                                                                             column=1,
-                                                                                                             sticky="n")
+        Label(self.frameTimer, textvariable=self.seconds, bg="black", font="Helvetica 50", fg="yellow").grid(row=0, column=1, sticky="n")
         self.timer_update()
 
     def play_sound(self):
@@ -140,10 +137,10 @@ class PlayerActionScreen(tk.Tk):
         # Update the timer every second until it reaches zero
         if self.closing_timer >= 0:
             self.seconds.set(self.minute_second_conv(self.closing_timer))
-            if (self.closing_timer == 375):
+            if self.closing_timer == 375:
                 t = threading.Thread(target=self.play_sound)
                 t.start()
-            if (self.closing_timer <= 365 and self.closing_timer >= 360):
+            if 365 <= self.closing_timer <= 360:
                 time.sleep(.2)
             self.closing_timer -= 1
             self.after(1000, self.timer_update)
@@ -152,7 +149,7 @@ class PlayerActionScreen(tk.Tk):
 
     def minute_second_conv(self, seconds):
         # Convert seconds to minutes and seconds format
-        if (seconds > 360):
+        if seconds > 360:
             seconds -= 360
             return f"{seconds:02d}"
         minutes = seconds // 60
@@ -235,10 +232,8 @@ class PlayerActionScreen(tk.Tk):
 if __name__ == '__main__':
     # Sample player data and event queue
     player_data = {
-        "alpha_red_users": [{"id": 1, "player_name": "Alpha_Red_Player_1"},
-                            {"id": 2, "player_name": "Alpha_Red_Player_2"}],
-        "alpha_green_users": [{"id": 3, "player_name": "Alpha_Green_Player_1"},
-                              {"id": 4, "player_name": "Alpha_Green_Player_2"}]
+        "alpha_red_users": [{"id": 1, "player_name": "Alpha_Red_Player_1"}, {"id": 2, "player_name": "Alpha_Red_Player_2"}],
+        "alpha_green_users": [{"id": 3, "player_name": "Alpha_Green_Player_1"}, {"id": 4, "player_name": "Alpha_Green_Player_2"}]
     }
     event_queue = Queue()
 

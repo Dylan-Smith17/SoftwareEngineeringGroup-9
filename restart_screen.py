@@ -44,7 +44,8 @@ class RestartScreen(tk.Tk):
         screen_height = self.winfo_screenheight()
         x_offset = (screen_width - 1500) // 2
         y_offset = (screen_height - 720) // 2
-
+        self.geometry(f"+{x_offset}+{y_offset}")
+    
     def start_game(self):
         # Execute the bash script using os.system
         self.destroy()

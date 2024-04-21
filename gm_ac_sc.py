@@ -66,14 +66,14 @@ class PlayerActionScreen(tk.Tk):
         try:
             with open('data.json', 'r') as file:
                 players_data = json.load(file)
-            print(players_data)  # Debug: print what's being loaded
         except FileNotFoundError:
             messagebox.showerror("Error", "data.json file not found")
-            players_data = []
+            return []  # Return an empty list if no data found
         except json.JSONDecodeError:
             messagebox.showerror("Error", "Invalid JSON format")
-            players_data = []
+            return []  # Return an empty list if JSON is invalid
         return players_data
+
 
     def create_gui(self):
         # Create frames for different sections of the GUI
@@ -142,19 +142,19 @@ class PlayerActionScreen(tk.Tk):
             Label(self.frameEventBoxCenter, text="PHOTON EVENTS", bg="black", font=self.helvetica_Medium, fg="white").grid(
                 row=0, column=1, sticky="new")
 
-def display_players(self):
-    # Check and display player names in team frames based on their data
-    if not self.players:
-        print("No player data available.")
-        return
+    def display_players(self):
+        # Check and display player names in team frames based on their data
+        if not self.players:
+            print("No player data available.")
+            return
 
-    for player in self.players:
-        if isinstance(player, dict) and 'id' in player and 'codename' in player:
-            # Assign teams to different frames based on some logic, for example, team names
-            team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen
-            Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
-        else:
-            print(f"Invalid player data: {player}")  # This will print if the player data is not a dictionary or missing keys
+        for player in self.players:
+            if isinstance(player, dict) and 'id' in player and 'codename' in player:
+                # Assign teams to different frames based on some logic, for example, team names
+                team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen
+                Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
+            else:
+                print(f"Invalid player data: {player}")  # This will print if the player data is not a dictionary or missing keys
 
     def start_timer(self):
         # Start a thread to update the timer
@@ -260,6 +260,7 @@ def display_players(self):
     def window_timer(self):
         # Close the window after the timer expires
         self.after((self.closing_timer + 1) * 1000, self.destroy)
+
 
 # For testing purposes
 if __name__ == '__main__':

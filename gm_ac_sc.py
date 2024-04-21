@@ -10,6 +10,7 @@ import json
 import random
 import sys
 from playsound import playsound
+from PIL import Image, ImageTk
 
 # Get the current working directory and set path for database access
 cwd = os.getcwd()
@@ -43,11 +44,9 @@ class PlayerActionScreen(tk.Tk):
         self.alpha_green_score = 0
         self.closing_timer = closing_timer
 
-        # Initialize event queue
+        # Store player and event queue data
+        self.players = player_data
         self.event_queue = event_queue
-
-        # Load player data
-        self.players = self.load_player_data()
 
         # Create the GUI layout
         self.create_gui()
@@ -60,7 +59,7 @@ class PlayerActionScreen(tk.Tk):
         self.window_timer()
 
     def load_player_data(self):
-        # Load player data from a JSON file or other data source
+        # Load player data from data.json
         try:
             with open('data.json', 'r') as file:
                 players_data = json.load(file)
@@ -68,7 +67,6 @@ class PlayerActionScreen(tk.Tk):
             messagebox.showerror("Error", "data.json file not found")
             players_data = []
         return players_data
-
 
     def create_gui(self):
         # Create frames for different sections of the GUI
@@ -117,10 +115,9 @@ class PlayerActionScreen(tk.Tk):
             row=0, column=1, sticky="new")
 
     def display_players(self):
-        # Iterate through each player and display their codename in the appropriate team frame
+        # Ensure 'player' is a dictionary and has 'id' and 'codename' keys
         for player in self.players:
             if isinstance(player, dict) and 'id' in player and 'codename' in player:
-                # Assign players to teams based on odd or even IDs
                 team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen
                 Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
             else:
@@ -204,11 +201,21 @@ class PlayerActionScreen(tk.Tk):
         for widget in frame.winfo_children():
             widget.destroy()
 
-        # Display player scores in the frame
-        for i, player in enumerate(sorted_players):
-            if player["color"] == color:
-                Label(frame, text=f"{player['player_name']}: {player['score']}", bg="black", font="Helvetica 12",
-                      fg=color).grid(row=i + 1, column=1, sticky="new")
+            # Load the image
+            img = Image.open('B.png')
+            img = img.resize((100, 100), Image.ANTIALIAS)  # Resize image if necessary
+            img_tk = ImageTk.PhotoImage(img)
+
+            # Loop through sorted players to display image and scores
+            for i, player in enumerate(sorted_players):
+                if player["color"] == color:
+                    # Display the image to the left
+                    label_img = Label(frame, image=img_tk)
+                    label_img.image = img_tk  # Keep a reference, very important in Tkinter!
+                    label_img.grid(row=i + 1, column=0, sticky="new")
+
+                    # Display player score next to the image
+                    Label(frame, text=f"{player['player_name']}: {player['score']}", bg="black", font="Helvetica 12", fg=color).grid(row=i + 1, column=1, sticky="new")
 
     def add_events(self, event_string):
         # Add events to the event window and update the display

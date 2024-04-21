@@ -20,7 +20,6 @@ sys.path.insert(0, cwd + '/DataBase')
 
 from tkinter import messagebox, ttk
 
-
 class PlayerActionScreen(tk.Tk):
     def __init__(self, player_data, event_queue, closing_timer=390):
         super().__init__()
@@ -29,7 +28,7 @@ class PlayerActionScreen(tk.Tk):
         self.configure(background='grey')
         self.configure(bg="black")
 
-# Define font styles
+        # Define font styles
         self.helvetica_Small = ("Helvetica", 10, "bold")
         self.helvetica_Medium = ("Helvetica", 20, "bold")
         self.helvetica_Large = ("Helvetica", 30, "bold")
@@ -56,11 +55,21 @@ class PlayerActionScreen(tk.Tk):
         self.start_timer()
         self.init_event_listener()
 
-        #flash highest score
-        self.flash_highest_score()
+        # Optionally, start flashing the highest score after initialization
+        self.after(1000, self.flash_highest_score)  # Start after everything is loaded
 
         # Close the window after the timer expires
         self.window_timer()
+
+    def create_gui(self):
+        # Create frames for different sections of the GUI
+        self.init_frames()
+
+        # Create designations to display text, this will initialize the labels used in flash_highest_score
+        self.init_designations()
+
+        # Display player names in team windows
+        self.display_players()
 
     def load_player_data(self):
         try:
@@ -73,17 +82,6 @@ class PlayerActionScreen(tk.Tk):
             messagebox.showerror("Error", "Invalid JSON format")
             return []  # Return an empty list if JSON is invalid
         return players_data
-
-
-    def create_gui(self):
-        # Create frames for different sections of the GUI
-        self.init_frames()
-
-        # Create designations to display text
-        self.init_designations()
-
-        # Display player names in team windows
-        self.display_players()
 
     def init_frames(self):
         # Create frames for different sections of the GUI
@@ -112,20 +110,18 @@ class PlayerActionScreen(tk.Tk):
         self.grid_columnconfigure(2, weight=1)
 
     def flash_highest_score(self):
-        # Get the highest score and corresponding team color
         highest_score = max(self.alpha_red_score, self.alpha_green_score)
         team_color = "red" if self.alpha_red_score > self.alpha_green_score else "green"
 
-        # Flash the score label of the team with the highest score
         if team_color == "red":
             score_label = self.red_score_label
         else:
             score_label = self.green_score_label
 
-        # Toggle the score label between visible and invisible with a short delay
         if highest_score > 0:
             self.toggle_score_label(score_label)
             self.after(500, self.flash_highest_score)
+
 
     def toggle_score_label(self, label):
             current_state = label.cget("state")
@@ -133,28 +129,24 @@ class PlayerActionScreen(tk.Tk):
             label.config(state=new_state)
 
     def init_designations(self):
-            # Create designation labels to display text
-            Label(self.frameRed, text="ALPHA RED", bg="black", font=self.helvetica_Medium, fg="red").grid(row=0, column=0,
-                                                                                                        sticky="nsew")
-            Label(self.frameGreen, text="ALPHA GREEN", bg="black", font=self.helvetica_Medium, fg="green").grid(row=0,
-                                                                                                                column=0,
-                                                                                                                sticky="nsew")
-            Label(self.frameEventBoxCenter, text="PHOTON EVENTS", bg="black", font=self.helvetica_Medium, fg="white").grid(
-                row=0, column=1, sticky="new")
+        self.red_score_label = Label(self.frameRed, text="ALPHA RED", bg="black", font=self.helvetica_Medium, fg="red")
+        self.red_score_label.grid(row=0, column=0, sticky="nsew")
+        self.green_score_label = Label(self.frameGreen, text="ALPHA GREEN", bg="black", font=self.helvetica_Medium, fg="green")
+        self.green_score_label.grid(row=0, column=0, sticky="nsew")
+        Label(self.frameEventBoxCenter, text="PHOTON EVENTS", bg="black", font=self.helvetica_Medium, fg="white").grid(row=0, column=1, sticky="new")
+
 
     def display_players(self):
-        # Check and display player names in team frames based on their data
         if not self.players:
             print("No player data available.")
             return
 
         for player in self.players:
             if isinstance(player, dict) and 'id' in player and 'codename' in player:
-                # Assign teams to different frames based on some logic, for example, team names
                 team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen
                 Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
             else:
-                print(f"Invalid player data: {player}")  # This will print if the player data is not a dictionary or missing keys
+                print(f"Invalid player data: {player}")  # This will show you exactly what is being processed
 
     def start_timer(self):
         # Start a thread to update the timer
@@ -260,7 +252,6 @@ class PlayerActionScreen(tk.Tk):
     def window_timer(self):
         # Close the window after the timer expires
         self.after((self.closing_timer + 1) * 1000, self.destroy)
-
 
 # For testing purposes
 if __name__ == '__main__':

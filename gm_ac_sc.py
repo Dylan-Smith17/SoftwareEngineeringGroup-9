@@ -43,9 +43,11 @@ class PlayerActionScreen(tk.Tk):
         self.alpha_green_score = 0
         self.closing_timer = closing_timer
 
-        # Store player and event queue data
-        self.players = player_data
+        # Initialize event queue
         self.event_queue = event_queue
+
+        # Load player data
+        self.players = self.load_player_data()
 
         # Create the GUI layout
         self.create_gui()
@@ -53,13 +55,12 @@ class PlayerActionScreen(tk.Tk):
         # Start the timer and event listener threads
         self.start_timer()
         self.init_event_listener()
-        #flash highest score
-        self.flash_highest_score()
+
         # Close the window after the timer expires
         self.window_timer()
 
     def load_player_data(self):
-        # Load player data from data.json
+        # Load player data from a JSON file or other data source
         try:
             with open('data.json', 'r') as file:
                 players_data = json.load(file)
@@ -67,6 +68,7 @@ class PlayerActionScreen(tk.Tk):
             messagebox.showerror("Error", "data.json file not found")
             players_data = []
         return players_data
+
 
     def create_gui(self):
         # Create frames for different sections of the GUI
@@ -103,27 +105,6 @@ class PlayerActionScreen(tk.Tk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
-    def flash_highest_score(self):
-        # Get the highest score and corresponding team color
-        highest_score = max(self.alpha_red_score, self.alpha_green_score)
-        team_color = "red" if self.alpha_red_score > self.alpha_green_score else "green"
-
-        # Flash the score label of the team with the highest score
-        if team_color == "red":
-            score_label = self.red_score_label
-        else:
-            score_label = self.green_score_label
-
-        # Toggle the score label between visible and invisible with a short delay
-        if highest_score > 0:
-            self.toggle_score_label(score_label)
-            self.after(500, self.flash_highest_score)
-
-    def toggle_score_label(self, label):
-        current_state = label.cget("state")
-        new_state = "normal" if current_state == "hidden" else "hidden"
-        label.config(state=new_state)
-
 
     def init_designations(self):
         # Create designation labels to display text
@@ -136,25 +117,20 @@ class PlayerActionScreen(tk.Tk):
             row=0, column=1, sticky="new")
 
     def display_players(self):
-    # Iterate through each team and their players
-        for team, players in self.players.items():
-            for player in players:
-                # Check if 'player' is a dictionary and has 'id' and 'codename' keys
-                if isinstance(player, dict) and 'id' in player and 'codename' in player:
-                    # Assign teams to different frames based on some logic, for example, team names
-                    team_frame = self.frameRed if 'red' in team.lower() else self.frameGreen
-                    Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
-                else:
-                    print(f"Invalid player data: {player}")
-
+        # Iterate through each player and display their codename in the appropriate team frame
+        for player in self.players:
+            if isinstance(player, dict) and 'id' in player and 'codename' in player:
+                # Assign players to teams based on odd or even IDs
+                team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen
+                Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
+            else:
+                print(f"Invalid player data: {player}")
 
     def start_timer(self):
         # Start a thread to update the timer
         self.seconds = StringVar()
         Label(self.frameTimer, textvariable=self.seconds, bg="black", font="Helvetica 50", fg="yellow").grid(row=0, column=1, sticky="n")
         self.timer_update()
-
-
 
     def play_sound(self):
         x = random.randint(1, 6)

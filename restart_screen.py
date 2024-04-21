@@ -29,7 +29,7 @@ class RestartScreen(tk.Tk):
             image = Image.new('RGB', (1280, 720), color='black')  # Placeholder image
 
         # Resize the image to fit within the window dimensions
-        image.thumbnail((1280, 720))
+        image.thumbnail((1000, 500))
 
         photo = ImageTk.PhotoImage(image)
 

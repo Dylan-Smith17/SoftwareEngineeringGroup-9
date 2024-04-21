@@ -114,13 +114,17 @@ class PlayerActionScreen(tk.Tk):
             row=0, column=1, sticky="new")
 
     def display_players(self):
-        # Ensure 'player' is a dictionary and has 'id' and 'codename' keys
-        for player in self.players:
-            if isinstance(player, dict) and 'id' in player and 'codename' in player:
-                team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen
-                Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
-            else:
-                print(f"Invalid player data: {player}")
+    # Iterate through each team and their players
+        for team, players in self.players.items():
+            for player in players:
+                # Check if 'player' is a dictionary and has 'id' and 'codename' keys
+                if isinstance(player, dict) and 'id' in player and 'codename' in player:
+                    # Assign teams to different frames based on some logic, for example, team names
+                    team_frame = self.frameRed if 'red' in team.lower() else self.frameGreen
+                    Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
+                else:
+                    print(f"Invalid player data: {player}")
+
 
     def start_timer(self):
         # Start a thread to update the timer

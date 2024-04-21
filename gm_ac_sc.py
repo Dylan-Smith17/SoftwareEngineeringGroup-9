@@ -56,21 +56,24 @@ class PlayerActionScreen(tk.Tk):
         self.start_timer()
         self.init_event_listener()
 
+        #flash highest score
+        self.flash_highest_score()
+
         # Close the window after the timer expires
         self.window_timer()
 
-def load_player_data(self):
-    try:
-        with open('data.json', 'r') as file:
-            players_data = json.load(file)
-        print(players_data)  # Debug: print what's being loaded
-    except FileNotFoundError:
-        messagebox.showerror("Error", "data.json file not found")
-        players_data = []
-    except json.JSONDecodeError:
-        messagebox.showerror("Error", "Invalid JSON format")
-        players_data = []
-    return players_data
+    def load_player_data(self):
+        try:
+            with open('data.json', 'r') as file:
+                players_data = json.load(file)
+            print(players_data)  # Debug: print what's being loaded
+        except FileNotFoundError:
+            messagebox.showerror("Error", "data.json file not found")
+            players_data = []
+        except json.JSONDecodeError:
+            messagebox.showerror("Error", "Invalid JSON format")
+            players_data = []
+        return players_data
 
     def create_gui(self):
         # Create frames for different sections of the GUI
@@ -108,29 +111,50 @@ def load_player_data(self):
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
 
-    def init_designations(self):
-        # Create designation labels to display text
-        Label(self.frameRed, text="ALPHA RED", bg="black", font=self.helvetica_Medium, fg="red").grid(row=0, column=0,
-                                                                                                      sticky="nsew")
-        Label(self.frameGreen, text="ALPHA GREEN", bg="black", font=self.helvetica_Medium, fg="green").grid(row=0,
-                                                                                                            column=0,
-                                                                                                            sticky="nsew")
-        Label(self.frameEventBoxCenter, text="PHOTON EVENTS", bg="black", font=self.helvetica_Medium, fg="white").grid(
-            row=0, column=1, sticky="new")
+    def flash_highest_score(self):
+        # Get the highest score and corresponding team color
+        highest_score = max(self.alpha_red_score, self.alpha_green_score)
+        team_color = "red" if self.alpha_red_score > self.alpha_green_score else "green"
 
-def display_players(self):
-    # Check and display player names in team frames based on their data
-    if not self.players:
-        print("No player data available.")
-        return
-    for player in self.players:
-        # Ensure 'player' is a dictionary and has 'id' and 'codename' keys
-        if isinstance(player, dict) and 'id' in player and 'codename' in player:
-            # Assign teams to different frames based on some logic, for example, team names
-            team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen
-            Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
+        # Flash the score label of the team with the highest score
+        if team_color == "red":
+            score_label = self.red_score_label
         else:
-            print(f"Invalid player data: {player}")
+            score_label = self.green_score_label
+
+        # Toggle the score label between visible and invisible with a short delay
+        if highest_score > 0:
+            self.toggle_score_label(score_label)
+            self.after(500, self.flash_highest_score)
+
+    def toggle_score_label(self, label):
+            current_state = label.cget("state")
+            new_state = "normal" if current_state == "hidden" else "hidden"
+            label.config(state=new_state)
+
+    def init_designations(self):
+            # Create designation labels to display text
+            Label(self.frameRed, text="ALPHA RED", bg="black", font=self.helvetica_Medium, fg="red").grid(row=0, column=0,
+                                                                                                        sticky="nsew")
+            Label(self.frameGreen, text="ALPHA GREEN", bg="black", font=self.helvetica_Medium, fg="green").grid(row=0,
+                                                                                                                column=0,
+                                                                                                                sticky="nsew")
+            Label(self.frameEventBoxCenter, text="PHOTON EVENTS", bg="black", font=self.helvetica_Medium, fg="white").grid(
+                row=0, column=1, sticky="new")
+
+    def display_players(self):
+        # Check and display player names in team frames based on their data
+        if not self.players:
+            print("No player data available.")
+            return
+        for player in self.players:
+            # Ensure 'player' is a dictionary and has 'id' and 'codename' keys
+            if isinstance(player, dict) and 'id' in player and 'codename' in player:
+                # Assign teams to different frames based on some logic, for example, team names
+                team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen
+                Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
+            else:
+                print(f"Invalid player data: {player}")
 
     def start_timer(self):
         # Start a thread to update the timer

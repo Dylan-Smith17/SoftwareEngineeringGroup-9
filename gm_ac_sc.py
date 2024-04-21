@@ -53,7 +53,8 @@ class PlayerActionScreen(tk.Tk):
         # Start the timer and event listener threads
         self.start_timer()
         self.init_event_listener()
-
+        #flash highest score
+        self.flash_highest_score()
         # Close the window after the timer expires
         self.window_timer()
 
@@ -102,6 +103,27 @@ class PlayerActionScreen(tk.Tk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
+    def flash_highest_score(self):
+        # Get the highest score and corresponding team color
+        highest_score = max(self.alpha_red_score, self.alpha_green_score)
+        team_color = "red" if self.alpha_red_score > self.alpha_green_score else "green"
+
+        # Flash the score label of the team with the highest score
+        if team_color == "red":
+            score_label = self.red_score_label
+        else:
+            score_label = self.green_score_label
+
+        # Toggle the score label between visible and invisible with a short delay
+        if highest_score > 0:
+            self.toggle_score_label(score_label)
+            self.after(500, self.flash_highest_score)
+
+    def toggle_score_label(self, label):
+        current_state = label.cget("state")
+        new_state = "normal" if current_state == "hidden" else "hidden"
+        label.config(state=new_state)
+
 
     def init_designations(self):
         # Create designation labels to display text
@@ -131,6 +153,8 @@ class PlayerActionScreen(tk.Tk):
         self.seconds = StringVar()
         Label(self.frameTimer, textvariable=self.seconds, bg="black", font="Helvetica 50", fg="yellow").grid(row=0, column=1, sticky="n")
         self.timer_update()
+
+
 
     def play_sound(self):
         x = random.randint(1, 6)

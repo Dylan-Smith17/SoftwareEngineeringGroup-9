@@ -11,3 +11,4 @@ pip install Pillow
 python3 spl_sc.py
 python3 pl_entry_sc.py
 python3 gm_ac_sc.py
+python3 restart_screen.py

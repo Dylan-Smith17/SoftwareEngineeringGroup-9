@@ -40,8 +40,10 @@ class RestartScreen(tk.Tk):
         # Create the button first
         start_button = tk.Button(self, text="Click to Restart Game", command=self.start_game)
         start_button.pack(pady=20)  # Add padding below the button
-
-        self.geometry("1400x800")
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x_offset = (screen_width - 1500) // 2
+        y_offset = (screen_height - 720) // 2
 
     def start_game(self):
         # Execute the bash script using os.system

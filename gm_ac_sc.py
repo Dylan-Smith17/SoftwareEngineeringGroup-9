@@ -14,6 +14,7 @@ from playsound import playsound
 # Get the current working directory and set path for database access
 cwd = os.getcwd()
 sys.path.insert(0, cwd + '/DataBase')
+from UDP_Client import send_data_over_udp, receive_info_from_server
 
 # Import required module (Player_Database) for database interaction
 # import Player_Database
@@ -22,22 +23,17 @@ from tkinter import messagebox, ttk
 
 
 class PlayerActionScreen(tk.Tk):
-    def __init__(self, player_data, event_queue, closing_timer=390):
+    def __init__(self, player_data, event_queue, closing_timer=365):
         super().__init__()
         self.title("The Actions of Photon!")
         self.geometry("1280x720")
         self.configure(background='grey')
         self.configure(bg="black")
 
-        # Initialize scores
-        self.alpha_red_score = 0
-        self.alpha_green_score = 0
 
         # Initialize the blinking flag
         self.blinking = False
 
-        # Start blinking the team scores
-        self.blink_scores()
 
 # Define font styles
         self.helvetica_Small = ("Helvetica", 10, "bold")
@@ -49,7 +45,7 @@ class PlayerActionScreen(tk.Tk):
         self.player_frame_y = 1442 / 3
 
         # Initialize scoreboard and timer settings
-        self.alpha_red_score = 0
+        self.alpha_red_score = 10
         self.alpha_green_score = 0
         self.closing_timer = closing_timer
 
@@ -59,8 +55,13 @@ class PlayerActionScreen(tk.Tk):
         # Load player data
         self.players = self.load_player_data()
 
+        self.event_list = []
+
         # Create the GUI layout
         self.create_gui()
+
+        # Start blinking the team scores
+        self.blink_scores()
 
         # Start the timer and event listener threads
         self.start_timer()
@@ -70,14 +71,20 @@ class PlayerActionScreen(tk.Tk):
         self.window_timer()
 
     def load_player_data(self):
-        # Load player data from a JSON file or other data source
         try:
             with open('data.json', 'r') as file:
                 players_data = json.load(file)
         except FileNotFoundError:
             messagebox.showerror("Error", "data.json file not found")
-            players_data = []
+            players_data = {}
+        except json.JSONDecodeError:
+            messagebox.showerror("Error", "Invalid JSON format")
+            players_data = {}
+        print(players_data)
         return players_data
+
+
+
 
 
     def create_gui(self):
@@ -132,16 +139,17 @@ class PlayerActionScreen(tk.Tk):
                                                                                                             sticky="nsew")
         Label(self.frameEventBoxCenter, text="PHOTON EVENTS", bg="black", font=self.helvetica_Medium, fg="white").grid(
             row=0, column=1, sticky="new")
-
+        
     def display_players(self):
-        # Iterate through each player and display their codename in the appropriate team frame
+        # Check and display player names in team frames based on their data
+        if not self.players:
+            print("No player data available.")
+            return
+
         for player in self.players:
-            if isinstance(player, dict) and 'id' in player and 'codename' in player:
-                # Assign players to teams based on odd or even IDs
-                team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen
-                Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).grid()
-            else:
-                print(f"Invalid player data: {player}")
+            # Assign teams to different frames based on some logic, for example, team names
+            team_frame = self.frameRed if self.players[player] % 2 == 0 else self.frameGreen
+            Label(team_frame, text=player, bg="black", fg="white", font=self.helvetica_Medium).grid()
 
     def start_timer(self):
         # Start a thread to update the timer
@@ -163,6 +171,11 @@ class PlayerActionScreen(tk.Tk):
                 t.start()
             if 365 <= self.closing_timer <= 360:
                 time.sleep(.2)
+
+            if self.closing_timer == 360: 
+                send_data_over_udp('202')
+                receive_info_from_server()
+
             self.closing_timer -= 1
             self.after(1000, self.timer_update)
         else:
@@ -187,11 +200,11 @@ class PlayerActionScreen(tk.Tk):
         # Listen for events from the queue and update scores and events accordingly
         while True:
             event_data = self.event_queue.get().split(":")
-            player_name_one = self.get_player_name(event_data[0])
-            player_name_two = self.get_player_name(event_data[1])
+            player_name_one = self.get_player_name(int(event_data[0]))
+            player_name_two = self.get_player_name(int(event_data[1]))
             event_string = f"{player_name_one} hit {player_name_two}"
 
-            if "red" in event_data[0]:
+            if int(event_data[0]) % 2 == 0:
                 self.alpha_red_score += 10
             else:
                 self.alpha_green_score += 10
@@ -199,14 +212,14 @@ class PlayerActionScreen(tk.Tk):
             self.update_scoreboard()
             self.add_events(event_string)
             self.event_queue.task_done()
+        
 
     def get_player_name(self, player_id):
         # Get the player name based on their ID
-        for team in self.players.values():
-            for player in team:
-                if str(player["id"]) == player_id:
-                    return player["player_name"]
-
+        for player in self.players:
+            print(self.players[player])
+            if int(self.players[player]) == player_id :
+                return player
     def update_scoreboard(self):
         # Sort players by their scores from highest to lowest
         sorted_players = sorted(self.players["alpha_red_users"] + self.players["alpha_green_users"],
@@ -237,10 +250,11 @@ class PlayerActionScreen(tk.Tk):
 
     def add_events(self, event_string):
         # Add events to the event window and update the display
-        self.update_event_designations()
+        # ... other code ...
         if len(self.event_list) > 8:
-            self.event_list.pop(0)
+            self.event_list.pop(0)  # Remove the oldest event if exceeding limit
         self.event_list.append(event_string)
+        # ... other code ...
         for i, event in enumerate(self.event_list):
             Label(self.frameEventBoxCenter, text=event, bg="black", font=self.helvetica_Medium,
                   fg="red" if "red" in event else "green").grid(row=i + 1, column=1, sticky="n")
@@ -269,15 +283,13 @@ class PlayerActionScreen(tk.Tk):
             self.stop_blinking()
 
     def blink_label(self, label):
-        # Toggle the label between visible and invisible state to create blinking effect
         if self.blinking:
-            label.config(fg="black")
+            label.config(state="disabled")
         else:
-            label.config(fg=label["bg"])
+            label.config(state="normal")
         self.blinking = not self.blinking
-
-        # Schedule the method to run again after a short delay for continuous blinking
         self.after(500, self.blink_scores)
+
 
     def stop_blinking(self):
         # Stop blinking the scores
@@ -292,7 +304,8 @@ if __name__ == '__main__':
         "alpha_green_users": [{"id": 3, "player_name": "Alpha_Green_Player_1"}, {"id": 4, "player_name": "Alpha_Green_Player_2"}]
     }
     event_queue = Queue()
-
+    event_queue.put('1:2')
+    event_queue.put('2:3')
     # Create and run the application
     app = PlayerActionScreen(player_data, event_queue)
     app.mainloop()

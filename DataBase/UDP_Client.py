@@ -35,6 +35,6 @@ def receive_info_from_server():
     # Listening for broadcast messages
     data, server_address = broadcast_socket.recvfrom(1024)
     print(f"Received broadcast message from {server_address}: {data.decode()}")
-    return data.decode()
-    # Close the receiving socket after use
+        # Close the receiving socket after use
     broadcast_socket.close()
+    return data.decode()

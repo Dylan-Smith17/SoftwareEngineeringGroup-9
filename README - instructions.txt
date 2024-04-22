@@ -9,13 +9,13 @@
 
 3.) Navigate to the repository file location and in one of the tabs enter: chmod +x start.bash
     
-4.) enter into console: .stat /start.bash
+4.) enter into console: bash start.bash
 
 5.) enter into console: y    -> this will download all the dependencies
 
 6.) If splash screen does not pop up-> enter into concole: pip install requests -> and re-run the start.bash
 
-7.) enter into console: python3 UDP_Server.py
+7.) enter into console: python3 DataBase/UDP_Server.py
 
 8.) Splash screen will pop up and close on its own
 

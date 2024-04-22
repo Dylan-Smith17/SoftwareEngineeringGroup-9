@@ -13,7 +13,7 @@ import Player_Database
 
 from tkinter import messagebox, ttk
 import socket
-from UDP_Client import send_data_over_udp
+# from UDP_Client import send_data_over_udp
 import json
 cwd = os.getcwd()
 sys.path.insert(0, cwd+'/DataBase')
@@ -155,7 +155,7 @@ class PlayerEntryScreen(tk.Tk):
         self.mainloop()
 
     def close_program(self, event):
-        send_data_over_udp(read_json_file('data.json'))
+        # send_data_over_udp(read_json_file('data.json'))
         self.destroy()  # Close the window
         sys.exit()  # Terminate the program
 if __name__ == "__main__":

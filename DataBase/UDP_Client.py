@@ -1,41 +1,40 @@
-# UDP_Client.py
-#
-# Team 9
-#
-# 03/17/24
-#
-# sender.py
-
-######################################################################################
-# Sends information to a server using UDP.
-#
-# Parameters
-#------------
-# info (str): The information to be sent.
-# serverIP (str): The IP address of the server.
-# send_port (int): The port on the server to which the information will be sent.
-######################################################################################
-
 import socket
-import json
 
-# Function to send data over UDP
-def send_data_over_udp(json_data, host='192.168.1.100', port=7500):
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-        json_bytes = json.dumps(json_data).encode('utf-8')
-        sock.sendto(json_bytes, (host, port))
+def send_data_over_udp(info, serverIP='0.0.0.0', send_port=7501):
+    # Sends information to a server using UDP.
+    #
+    # Parameters:
+    # info (str): The information to be sent.
+    # serverIP (str): The IP address of the server.
+    # send_port (int): The port on the server to which the information will be sent.
 
-def main():
-    # Example: Define information to send
-    info_to_send = "1"
+    # Set up sending socket
+    send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # Sending information to the server
+    send_socket.sendto(info.encode(), (serverIP, send_port))
+    send_socket.close()
 
-    try:
-        # Send information to server using UDP
-        send_data_over_udp(info_to_send)
-        print(f"Sent '{info_to_send}' to server.")
+def receive_info_from_server():
+    # Function to receive information from the server using UDP broadcast.
+    #
+    # This function sets up a broadcast socket to listen for messages from the server
+    # and prints the received message along with the server address.
+    #
+    # Note: Make sure `serverIP` is defined before calling this function.
+    #
+    # Parameters:
+    # None
+    #
+    # Returns:
+    # None
 
-    except Exception as e:
-        print(f"An error occurred while sending data: {e}")
-
-if __name__ == "__main__":
-    main()
+    broadcast_port = 7500
+    # Set up broadcast socket for listening
+    broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    broadcast_socket.bind(('0.0.0.0', broadcast_port))
+    # Listening for broadcast messages
+    data, server_address = broadcast_socket.recvfrom(1024)
+    print(f"Received broadcast message from {server_address}: {data.decode()}")
+    return data.decode()
+    # Close the receiving socket after use
+    broadcast_socket.close()

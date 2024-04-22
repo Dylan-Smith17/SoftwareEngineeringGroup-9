@@ -1,70 +1,68 @@
+
 import socket
 import random
 import time
+import os
+import sys
+cwd = os.getcwd()
+sys.path.insert(0, cwd + '/DataBase')
+from UDP_Client import send_data_over_udp, receive_info_from_server
 
-bufferSize  = 1024
-serverAddressPort   = ("127.0.0.1", 7501)  # Matching UDP server's address and port
+# Configuration
+bufferSize = 1024
+serverAddressPort = ("127.0.0.1", 7500)
+clientAddressPort = ("127.0.0.1", 7501)
 
-print('This program will generate some test traffic for 2 players on the red team as well as 2 players on the green team')
-print('')
+def simulated_start():
+    time.sleep(5)
+    send_data_over_udp('202')
+def wait_for_start() -> None:
+    print("\nWaiting for start from game software")
+    received_data: str = ""
+    while received_data != '202':
+        received_data = receive_info_from_server()
+        print(f"Received from game software: {received_data}")
+# Function to simulate game end
+def simulate_game_end():
+    print("Simulating game end.")
+    end_message = '221'
+    for _ in range(3):  # Send the end code three times
+        send_data_over_udp(end_message)
 
-red1 = input('Enter equipment id of red player 1 ==> ')
-red2 = input('Enter equipment id of red player 2 ==> ')
-green1 = input('Enter equipment id of green player 1 ==> ')
-green2 = input('Enter equipment id of green player 2 ==> ')
+# Function to simulate a hit
+def simulate_hit(sender, receiver):
+    message = f"{sender}:{receiver}"
+    print(f"Transmitting hit: {message}")
+    send_data_over_udp(message)
 
-# Create datagram socket
-UDPClientSocketTransmit = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+# Function to simulate base hit
+def simulate_base_hit(player_id, base_code):
+    message = f"{player_id}:{base_code}"
+    print(f"Transmitting base hit: {message}")
+    send_data_over_udp(message)
 
-# Wait for start from game software
-print ("")
-print ("Waiting for start from game_software")
+# Main traffic generation logic
+def generate_traffic(red_players, green_players):
+    simulated_start()
+    wait_for_start()
+    time.sleep(2)  # Wait for game software to process the start code
 
-received_data = ' '
-while received_data != '202':
-    received_data, address = UDPClientSocketTransmit.recvfrom(bufferSize)
-    received_data = received_data.decode('utf-8')
-    print ("Received from game software: " + received_data)
-print ('')
+    for _ in range(30):  # Run the simulation for 30 interactions
+        red_player = random.choice(red_players)
+        green_player = random.choice(green_players)
+        simulate_hit(red_player, green_player)
 
-# Create events, random player and order
-counter = 0
+        # Simulate base hit after every 10 interactions
+        if _ % 10 == 0:
+            simulate_base_hit(random.choice(red_players), "43")
+            simulate_base_hit(random.choice(green_players), "53")
 
-while True:
-    if random.randint(1,2) == 1:
-        redplayer = red1
-    else:
-        redplayer = red2
+        time.sleep(random.randint(1, 3))
 
-    if random.randint(1,2) == 1:
-        greenplayer = green1
-    else: 
-        greenplayer = green2    
+    simulate_game_end()
 
-    if random.randint(1,2) == 1:
-        message = str(redplayer) + ":" + str(greenplayer)
-    else:
-        message = str(greenplayer) + ":" + str(redplayer)
-        
-    # After 10 iterations, send base hit
-    if counter == 10:
-        message = str(redplayer) + ":43"
-    if counter == 20:
-        message = str(greenplayer) + ":53"
-        
-    print("Transmitting to game: " + message)
-    
-    UDPClientSocketTransmit.sendto(str.encode(str(message)), serverAddressPort)
-    
-    # Receive answer from game software
-    received_data, address = UDPClientSocketTransmit.recvfrom(bufferSize)
-    received_data = received_data.decode('utf-8')
-    print ("Received from game software: " + received_data)
-    print ('')
-    
-    counter = counter + 1
-    if received_data == '221':
-        break
-    time.sleep(random.randint(1,3))
-    
-print("Program complete")
+# Run the traffic generator
+if __name__ == "__main__":
+    red_players = [input('Enter equipment id of red player 1 ==> '), input('Enter equipment id of red player 2 ==> ')]
+    green_players = [input('Enter equipment id of green player 1 ==> '), input('Enter equipment id of green player 2 ==> ')]
+    generate_traffic(red_players, green_players)

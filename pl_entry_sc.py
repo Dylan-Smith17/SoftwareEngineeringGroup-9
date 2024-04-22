@@ -9,8 +9,6 @@ import os
 from tkinter import simpledialog
 cwd = os.getcwd()
 sys.path.insert(0, cwd+'/DataBase')
-import Player_Database
-
 from tkinter import messagebox, ttk
 import socket
 # from UDP_Client import send_data_over_udp

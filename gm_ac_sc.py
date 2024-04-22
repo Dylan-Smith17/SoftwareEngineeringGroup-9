@@ -187,6 +187,7 @@ class PlayerActionScreen(tk.Tk):
                 send_data_over_udp('202')
                 receive_info_from_server()
 
+
             self.closing_timer -= 1
             self.after(1000, self.timer_update)
         else:
@@ -221,7 +222,9 @@ class PlayerActionScreen(tk.Tk):
                 self.alpha_green_score += 10
 
             self.update_scoreboard()
+            
             self.add_events(event_string)
+            
             self.event_queue.task_done()
         
 

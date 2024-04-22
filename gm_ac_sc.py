@@ -77,10 +77,11 @@ class PlayerActionScreen(tk.Tk):
                 players_data = json.load(file)
         except FileNotFoundError:
             messagebox.showerror("Error", "data.json file not found")
-            return []  # Return an empty list if no data found
+            players_data = {}
         except json.JSONDecodeError:
             messagebox.showerror("Error", "Invalid JSON format")
-            return []  # Return an empty list if JSON is invalid
+            players_data = {}
+        print(players_data)
         return players_data
 
     def init_frames(self):
@@ -136,18 +137,17 @@ class PlayerActionScreen(tk.Tk):
         Label(self.frameEventBoxCenter, text="PHOTON EVENTS", bg="black", font=self.helvetica_Medium, fg="white").grid(row=0, column=1, sticky="new")
 
 
-    def display_players(self):
+   def display_players(self):
+        # Check and display player names in team frames based on their data
         if not self.players:
             print("No player data available.")
             return
 
         for player in self.players:
-            if isinstance(player, dict) and 'id' in player and 'codename' in player:
-                team_frame = self.frameRed if player['id'] % 2 == 0 else self.frameGreen
-                Label(team_frame, text=player['codename'], bg="black", fg="white", font=self.helvetica_Medium).pack()
-            else:
-                print(f"Invalid player data: {player}")  # This will show you exactly what is being processed
-
+            # Assign teams to different frames based on some logic, for example, team names
+            team_frame = self.frameRed if self.players[player] % 2 == 0 else self.frameGreen
+            Label(team_frame, text=player, bg="black", fg="white", font=self.helvetica_Medium).grid()
+            
     def start_timer(self):
         # Start a thread to update the timer
         self.seconds = StringVar()

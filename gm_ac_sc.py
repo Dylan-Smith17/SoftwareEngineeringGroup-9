@@ -9,7 +9,7 @@ import socket
 import json
 import random
 import sys
-#from playsound import playsound
+from playsound import playsound
 
 # Get the current working directory and set path for database access
 cwd = os.getcwd()
@@ -152,7 +152,7 @@ class PlayerActionScreen(tk.Tk):
     def play_sound(self):
         x = random.randint(1, 6)
         x = random.randint(1, 8)
-        #playsound(cwd + '/photon-main/photon_tracks/Track0' + str(x) + '.mp3')  
+        playsound(cwd + '/photon-main/photon_tracks/Track0' + str(x) + '.mp3')  
 
     def timer_update(self):
         # Update the timer every second until it reaches zero

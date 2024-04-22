@@ -25,6 +25,11 @@
 10.) Upon completion of the initial game countdown, the software will send out code 202.
 
 11.) At the conclusion of the game, code 221 will be sent out three times by the software.
+
+*** IF THE SOCKET IS STILL OPEN IF YOU ARE TRYING TO RUN IT A SECOND TIME THEN RUN THESE COMMANDS***********
+$ lsof -i :7500
+$ kill -9 <PID>
+************************************************************************************************************
 ############################################################################################################
 
 

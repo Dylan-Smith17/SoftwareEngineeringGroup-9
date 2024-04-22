@@ -1,4 +1,5 @@
 import time
+from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import Label, Frame, StringVar
 import threading
@@ -10,7 +11,6 @@ import json
 import random
 import sys
 from playsound import playsound
-from PIL import Image, ImageTk
 
 # Get the current working directory and set path for database access
 cwd = os.getcwd()
@@ -57,6 +57,10 @@ class PlayerActionScreen(tk.Tk):
         self.players = self.load_player_data()
 
         self.event_list = []
+
+        self.alpha_green_players = {}
+
+        self.alpha_red_players = {}
 
         # Create the GUI layout
         self.create_gui()
@@ -149,8 +153,15 @@ class PlayerActionScreen(tk.Tk):
 
         for player in self.players:
             # Assign teams to different frames based on some logic, for example, team names
-            team_frame = self.frameRed if self.players[player] % 2 == 0 else self.frameGreen
+            team_frame = self.frameRed if int(self.players[player]) % 2 == 0 else self.frameGreen
+            if int(self.players[player] % 2 == 0) :
+                team_frame = self.frameRed
+                self.alpha_red_players.update({player : 0})
+            else: 
+                team_frame = self.frameGreen
+                self.alpha_green_players.update({player : 0})
             Label(team_frame, text=player, bg="black", fg="white", font=self.helvetica_Medium).grid()
+        print(self.alpha_red_players)
 
     def start_timer(self):
         # Start a thread to update the timer
@@ -159,7 +170,6 @@ class PlayerActionScreen(tk.Tk):
         self.timer_update()
 
     def play_sound(self):
-        x = random.randint(1, 6)
         x = random.randint(1, 8)
         playsound(cwd + '/photon-main/photon_tracks/Track0' + str(x) + '.mp3')  
 
@@ -218,17 +228,16 @@ class PlayerActionScreen(tk.Tk):
     def get_player_name(self, player_id):
         # Get the player name based on their ID
         for player in self.players:
-            print(self.players[player])
             if int(self.players[player]) == player_id :
                 return player
     def update_scoreboard(self):
         # Sort players by their scores from highest to lowest
-        sorted_players = sorted(self.players["alpha_red_users"] + self.players["alpha_green_users"],
-                                key=lambda x: x["score"], reverse=True)
-
-        # Update the scoreboard for both teams
-        self.update_scoreboard_designations(self.frameEventBoxLeft, sorted_players, "red")
-        self.update_scoreboard_designations(self.frameEventBoxRight, sorted_players, "green")
+        
+        sorted_red_players = dict(sorted(self.alpha_red_players.items(), key=lambda item: item, reverse=True))
+        sorted_green_players = dict(sorted(self.alpha_green_players.items(), key=lambda item: item, reverse=True))
+        # # Update the scoreboard for both teams
+        self.update_scoreboard_designations(self.frameEventBoxLeft, sorted_red_players, "red")
+        self.update_scoreboard_designations(self.frameEventBoxRight, sorted_green_players, "green")
 
         # Update the score labels with the latest scores
         self.red_score_label.config(text=str(self.alpha_red_score))
@@ -239,25 +248,23 @@ class PlayerActionScreen(tk.Tk):
 
 
     def update_scoreboard_designations(self, frame, sorted_players, color):
-        # Update the designations for displaying scores
+         # Update the designations for displaying scores
         for widget in frame.winfo_children():
             widget.destroy()
 
-            # Load the image
-            img = Image.open('B.png')
-            img = img.resize((100, 100), Image.ANTIALIAS)  # Resize image if necessary
-            img_tk = ImageTk.PhotoImage(img)
+            # # Load the image
+            # img = Image.open('B.png')
+            # img = img.resize((100, 100), Image.ANTIALIAS)  # Resize image if necessary
+            # img_tk = Image.PhotoImage(img)
 
-            # Loop through sorted players to display image and scores
-            for i, player in enumerate(sorted_players):
-                if player["color"] == color:
-                    # Display the image to the left
-                    label_img = Label(frame, image=img_tk)
-                    label_img.image = img_tk  # Keep a reference, very important in Tkinter!
-                    label_img.grid(row=i + 1, column=0, sticky="new")
 
-                    # Display player score next to the image
-            Label(frame, text=f"{player['player_name']}: {player['score']}", bg="black", font="Helvetica 12", fg=color).grid(row=i + 1, column=1, sticky="new")
+        # Display player scores in the frame
+        for i, player in enumerate(sorted_players):
+            Label(frame, text=f"{player}: {sorted_players[player]}", bg="black", font="Helvetica 12",
+                    fg=color).grid(row=i + 1, column=1, sticky="new")
+            # label_img = Label(frame, image=img_tk)
+            #     label_img.image = img_tk  # Keep a reference, very important in Tkinter!
+            #     label_img.grid(row=i + 1, column=0, sticky="new")
 
     def add_events(self, event_string):
         # Add events to the event window and update the display
@@ -266,6 +273,8 @@ class PlayerActionScreen(tk.Tk):
             self.event_list.pop(0)  # Remove the oldest event if exceeding limit
         self.event_list.append(event_string)
         # ... other code ...
+       
+
         for i, event in enumerate(self.event_list):
             Label(self.frameEventBoxCenter, text=event, bg="black", font=self.helvetica_Medium,
                   fg="red" if "red" in event else "green").grid(row=i + 1, column=1, sticky="n")
@@ -307,6 +316,8 @@ class PlayerActionScreen(tk.Tk):
         self.blinking = False
 
 
+
+
 # For testing purposes
 if __name__ == '__main__':
     # Sample player data and event queue
@@ -314,9 +325,18 @@ if __name__ == '__main__':
         "alpha_red_users": [{"id": 1, "player_name": "Alpha_Red_Player_1"}, {"id": 2, "player_name": "Alpha_Red_Player_2"}],
         "alpha_green_users": [{"id": 3, "player_name": "Alpha_Green_Player_1"}, {"id": 4, "player_name": "Alpha_Green_Player_2"}]
     }
-    event_queue = Queue()
+    
+   
+    
+    event_queue = Queue()    
+
     event_queue.put('1:2')
-    event_queue.put('2:3')
+    event_queue.put('3:4')
+    event_queue.put('2:1')
+    event_queue.put('4:3')
+    event_queue.put('2:1')
+
+    
     # Create and run the application
     app = PlayerActionScreen(player_data, event_queue)
     app.mainloop()

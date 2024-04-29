@@ -12,7 +12,7 @@ import socket
 import json
 import random
 import sys
-#from playsound import playsound
+from playsound import playsound
 from tkinter import messagebox, ttk
 from Player import Player
 # Get the current working directory and set path for database access
@@ -291,6 +291,30 @@ class PlayerActionScreen(tk.Tk):
                 player_name_one = self.get_player_name(int(event_data[0]))
                 player_name_two = self.get_player_name(int(event_data[1]))
                 event_string = f"{player_name_one} hit {player_name_two}"
+            else:
+                    if int(event_data[1]) == 43:
+                        self.alpha_red_score += 100
+                        if int(event_data[0]) % 2 == 0:
+                          try:
+                            player = self.is_id(int(event_data[0]), self.alpha_red_players)
+                            if player:  # Check if player is not None
+                                player.score += 100
+                          except (AttributeError, TypeError):
+                              print("Error updating player score:", event_data[0])
+                        player_name_one = self.get_player_name(int(event_data[0]))
+                        event_string = f"{player_name_one} hit Green Base"
+                              
+                    if int(event_data[1]) == 53:
+                        self.alpha_green_score += 100
+                        if int(event_data[0]) % 2 == 1:
+                          try:
+                            player = self.is_id(int(event_data[0]), self.alpha_green_players)
+                            if player:  # Check if player is not None
+                                player.score += 100
+                          except (AttributeError, TypeError):
+                                print("Error updating player score:", event_data[0])
+                        player_name_one = self.get_player_name(int(event_data[0]))
+                        event_string = f"{player_name_one} hit Red Base"
 
 
             self.update_scoreboard()

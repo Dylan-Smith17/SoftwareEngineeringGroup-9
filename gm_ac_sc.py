@@ -292,7 +292,7 @@ class PlayerActionScreen(tk.Tk):
                 player_name_two = self.get_player_name(int(event_data[1]))
                 event_string = f"{player_name_one} hit {player_name_two}"
             else:
-                    if int(event_data[1]) == 43:
+                    if int(event_data[1]) == 53:
                         self.alpha_red_score += 100
                         if int(event_data[0]) % 2 == 0:
                           try:
@@ -304,7 +304,7 @@ class PlayerActionScreen(tk.Tk):
                         player_name_one = self.get_player_name(int(event_data[0]))
                         event_string = f"{player_name_one} hit Green Base"
                               
-                    if int(event_data[1]) == 53:
+                    if int(event_data[1]) == 43:
                         self.alpha_green_score += 100
                         if int(event_data[0]) % 2 == 1:
                           try:

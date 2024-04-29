@@ -295,10 +295,15 @@ class PlayerActionScreen(tk.Tk):
                     if int(event_data[1]) == 53:
                         self.alpha_red_score += 100
                         if int(event_data[0]) % 2 == 0:
+                         
                           try:
                             player = self.is_id(int(event_data[0]), self.alpha_red_players)
                             if player:  # Check if player is not None
+                                print('player base!')
                                 player.score += 100
+                                player.isBase = True
+                            else: 
+                                print('no player base :()')
                           except (AttributeError, TypeError):
                               print("Error updating player score:", event_data[0])
                         player_name_one = self.get_player_name(int(event_data[0]))
@@ -311,6 +316,7 @@ class PlayerActionScreen(tk.Tk):
                             player = self.is_id(int(event_data[0]), self.alpha_green_players)
                             if player:  # Check if player is not None
                                 player.score += 100
+                                player.isBase = True
                           except (AttributeError, TypeError):
                                 print("Error updating player score:", event_data[0])
                         player_name_one = self.get_player_name(int(event_data[0]))
@@ -335,29 +341,20 @@ class PlayerActionScreen(tk.Tk):
         # Update the score labels with the latest scores
         self.red_score_label.config(text=str(self.alpha_red_score))
         self.green_score_label.config(text=str(self.alpha_green_score))
-
         # Schedule the method to run again after a short delay for continuous updating
         self.after(1000, self.update_scoreboard)
 
 
-    def update_scoreboard_designations(self, frame, sorted_players, color):
+    def update_scoreboard_designations(self, frame):
          # Update the designations for displaying scores
         for widget in frame.winfo_children():
-            widget.destroy()
+            #widget.destroy()
             # # Load the image
+            #print('image loading')
             img = Image.open('B.png')
-            img = img.resize((100, 100), Image.ANTIALIAS)  # Resize image if necessary
-            img_tk = Image.PhotoImage(img)
+            #img = img.resize((100, 100), Image.ANTIALIAS)  # Resize image if necessary
+            #img_tk = Image.PhotoImage(img)
 
-
-         # Display player scores in the frame
-        for i, player in enumerate(sorted_players):
-            Label(frame, text=f"{player}: {sorted_players[player]}", bg="black", font="Helvetica 12",
-            fg=color).grid(row=i + 1, column=1, sticky="new")
-            label_img = Label(frame, image=img_tk)
-            label_img.image = img_tk  # Keep a reference, very important in Tkinter!
-            label_img.grid(row=i + 1, column=0, sticky="new")
-            self.display_players()
 
 
     def add_events(self, event_string):

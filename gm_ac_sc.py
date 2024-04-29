@@ -12,7 +12,7 @@ import socket
 import json
 import random
 import sys
-from playsound import playsound
+#from playsound import playsound
 from tkinter import messagebox, ttk
 from Player import Player
 # Get the current working directory and set path for database access
@@ -320,21 +320,20 @@ class PlayerActionScreen(tk.Tk):
          # Update the designations for displaying scores
         for widget in frame.winfo_children():
             widget.destroy()
-
             # # Load the image
-            # img = Image.open('B.png')
-            # img = img.resize((100, 100), Image.ANTIALIAS)  # Resize image if necessary
-            # img_tk = Image.PhotoImage(img)
+            img = Image.open('B.png')
+            img = img.resize((100, 100), Image.ANTIALIAS)  # Resize image if necessary
+            img_tk = Image.PhotoImage(img)
 
 
-        # # Display player scores in the frame
-        # for i, player in enumerate(sorted_players):
-        #     Label(frame, text=f"{player}: {sorted_players[player]}", bg="black", font="Helvetica 12",
-        #             fg=color).grid(row=i + 1, column=1, sticky="new")
-        #     # label_img = Label(frame, image=img_tk)
-        #     #     label_img.image = img_tk  # Keep a reference, very important in Tkinter!
-        #     #     label_img.grid(row=i + 1, column=0, sticky="new")
-        # self.display_players()
+         # Display player scores in the frame
+        for i, player in enumerate(sorted_players):
+            Label(frame, text=f"{player}: {sorted_players[player]}", bg="black", font="Helvetica 12",
+            fg=color).grid(row=i + 1, column=1, sticky="new")
+            label_img = Label(frame, image=img_tk)
+            label_img.image = img_tk  # Keep a reference, very important in Tkinter!
+            label_img.grid(row=i + 1, column=0, sticky="new")
+            self.display_players()
 
 
     def add_events(self, event_string):

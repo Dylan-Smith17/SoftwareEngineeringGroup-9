@@ -238,7 +238,14 @@ class PlayerActionScreen(tk.Tk):
                 # Start blinking the team scores
                 self.blink_scores()
 
+            if self.closing_timer == 0:
+                for i in range(3):
+                    self.transmit_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+                    self.transmit_socket.sendto(str.encode('221'), ('127.0.0.1', 7500))
+                    self.init_event_listener()
+
             self.closing_timer -= 1
+
 
             self.display_players()
 
@@ -352,23 +359,13 @@ class PlayerActionScreen(tk.Tk):
         self.after(1000, self.update_scoreboard)
 
 
-    def update_scoreboard_designations(self, frame):
-         # Update the designations for displaying scores
-        for widget in frame.winfo_children():
-            #widget.destroy()
-            # # Load the image
-            #print('image loading')
-            img = Image.open('B.png')
-            #img = img.resize((100, 100), Image.ANTIALIAS)  # Resize image if necessary
-            #img_tk = Image.PhotoImage(img)
-
-
 
     def add_events(self, event_string):
         # Add events to the event window and update the display
         # ... other code ...
         if len(self.event_list) > 8:
             self.event_list.pop(0)  # Remove the oldest event if exceeding limit
+            self.update_event_designations()
         self.event_list.append(event_string)
         # ... other code ...
        

@@ -3,7 +3,7 @@ import time
 import threading
 from PIL import Image, ImageTk
 import tkinter as tk
-from tkinter import Label, Frame, StringVar
+from tkinter import Label, Frame, StringVar, PhotoImage
 import threading
 from queue import Queue
 import os
@@ -15,6 +15,7 @@ import sys
 from playsound import playsound
 from tkinter import messagebox, ttk
 from Player import Player
+ 
 # Get the current working directory and set path for database access
 cwd = os.getcwd()
 sys.path.insert(0, cwd + '/DataBase')
@@ -175,6 +176,7 @@ class PlayerActionScreen(tk.Tk):
                 self.alpha_green_players.append(player)
                 team_frame = self.frameGreen
     def display_players(self):
+        b_image = PhotoImage(file="B.png") #load the "B" image
             # Check and display player names in team frames based on their data
         self.alpha_red_players = sorted(self.alpha_red_players, key=lambda player: player.score, reverse=True)
         #print(self.alpha_red_players)
@@ -183,11 +185,21 @@ class PlayerActionScreen(tk.Tk):
         row = 2
         for r in self.alpha_red_players:
             temp_name = self.get_player_name(r.id)
+            if r.isBase:
+                 label = Label(self.frameRed, image=b_image, text=temp_name + " : " + str(r.score), compound='left', bg="black", fg="white", font=self.helvetica_Medium)
+                 label.image = b_image  # Keep a reference to the image
+            else:
+                label = Label(self.frameRed, text=temp_name + " : " + str(r.score), bg="black", fg="white", font=self.helvetica_Medium)
             Label(self.frameRed, text=temp_name + " : " + str(r.score), bg="black", fg="white", font=self.helvetica_Medium).grid(row=row, column=0)
             row += 1  # Increment row for the next player label
         row = 2
         for g in self.alpha_green_players:
             temp_name = self.get_player_name(g.id)
+            if g.isBase:
+                label = Label(self.frameGreen, image=b_image, text=temp_name + " : " + str(g.score), compound='left', bg="black", fg="white", font=self.helvetica_Medium)
+                label.image = b_image
+            else:
+                label = Label(self.frameGreen, text=temp_name + " : " + str(g.score), bg="black", fg="white", font=self.helvetica_Medium)
             Label(self.frameGreen, text=temp_name + " : " + str(g.score), bg="black", fg="white", font=self.helvetica_Medium).grid(row=row, column=0)
             row += 1  # Increment row for the next player label
 

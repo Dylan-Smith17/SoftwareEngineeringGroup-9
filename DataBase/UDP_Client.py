@@ -38,4 +38,3 @@ def receive_info_from_server():
     return data.decode()
     # Close the receiving socket after use
     
-

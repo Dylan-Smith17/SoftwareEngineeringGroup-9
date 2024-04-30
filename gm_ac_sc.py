@@ -1,8 +1,6 @@
 import queue
 import time
-
 import threading
-
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import Label, Frame, StringVar, PhotoImage
@@ -23,9 +21,7 @@ sys.path.insert(0, cwd)
 
 
 class PlayerActionScreen(tk.Tk):
-
     def __init__(self, event_queue, closing_timer=365):
-
         super().__init__()
         self.title("The Actions of Photon!")
         self.geometry("1280x720")
@@ -72,6 +68,7 @@ class PlayerActionScreen(tk.Tk):
         
 
         self.event_list = []
+
 
 
 
@@ -168,7 +165,6 @@ class PlayerActionScreen(tk.Tk):
         for player in self.players:
             
             # Assign teams to different frames based on some logic, for example, team names
-
             team_frame = self.frameRed if int(player.id) % 2 == 0 else self.frameGreen
             if int(player.id) % 2 == 0:
                 player.color = 'red'
@@ -203,7 +199,6 @@ class PlayerActionScreen(tk.Tk):
                 label = Label(self.frameGreen, text=temp_name + " : " + str(g.score), bg="black", fg="white", font=self.helvetica_Medium)
             label.grid(row=row, column=0)  # Add the label to the grid
             row += 1  # Increment row for the next player label
-
 
 
     def start_timer(self):
@@ -248,7 +243,6 @@ class PlayerActionScreen(tk.Tk):
                     self.transmit_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
                     self.transmit_socket.sendto(str.encode('221'), ('127.0.0.1', 7500))
                     self.init_event_listener()
-
 
             self.closing_timer -= 1
 
@@ -352,21 +346,17 @@ class PlayerActionScreen(tk.Tk):
 
     def get_player_name(self, player_id):
         # Get the player name based on their ID
-
         for player in self.player_names:
             if int(self.player_names[player]) == player_id :
-
                 return player
             
     def update_scoreboard(self):
-
 
         # Update the score labels with the latest scores
         self.red_score_label.config(text=str(self.alpha_red_score))
         self.green_score_label.config(text=str(self.alpha_green_score))
         # Schedule the method to run again after a short delay for continuous updating
         self.after(1000, self.update_scoreboard)
-
 
 
 
@@ -425,11 +415,11 @@ class PlayerActionScreen(tk.Tk):
 
 
 
-
-
 # For testing purposes
 if __name__ == '__main__':
 
+    
+    event_queue = queue.Queue()    
 
     
     # Create and run the application

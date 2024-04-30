@@ -3,6 +3,7 @@ class Player:
         self.id = id
         self.score = score
         self.color = color
+        self.isBase = isBase
 
 
     

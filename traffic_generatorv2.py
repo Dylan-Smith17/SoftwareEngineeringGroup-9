@@ -23,10 +23,11 @@ def wait_for_start() -> None:
         print(f"Received from game software: {received_data}")
 # Function to simulate game end
 def simulate_game_end():
-    print("Simulating game end.")
-    end_message = '221'
-    for _ in range(3):  # Send the end code three times
-        send_data_over_udp(end_message)
+    print("\nWaiting for end from game software")
+    received_data = ''
+    while received_data != '221':
+        received_data = receive_info_from_server()
+        print(f"Received from game software: {received_data}")
 
 # Function to simulate a hit
 def simulate_hit(sender, receiver):
@@ -63,7 +64,8 @@ def generate_traffic(red_players, green_players):
         time.sleep(random.randint(1, 3))
     simulate_hit(1,3) #show that if player hits teammate: -10 points
 
-    #simulate_game_end()
+
+    simulate_game_end()
 
 # Run the traffic generator
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ sys.path.insert(0, cwd)
 
 
 class PlayerActionScreen(tk.Tk):
-    def __init__(self, event_queue, closing_timer=365):
+    def __init__(self, event_queue, closing_timer=390):
         super().__init__()
         self.title("The Actions of Photon!")
         self.geometry("1280x720")

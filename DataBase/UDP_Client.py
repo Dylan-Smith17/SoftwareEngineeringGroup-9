@@ -12,7 +12,6 @@ def send_data_over_udp(info, serverIP='0.0.0.0', send_port=7501):
     send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     # Sending information to the server
     send_socket.sendto(info.encode(), (serverIP, send_port))
-    send_socket.close()
 
 def receive_info_from_server():
     # Function to receive information from the server using UDP broadcast.
@@ -35,6 +34,7 @@ def receive_info_from_server():
     # Listening for broadcast messages
     data, server_address = broadcast_socket.recvfrom(1024)
     print(f"Received broadcast message from {server_address}: {data.decode()}")
-        # Close the receiving socket after use
-    broadcast_socket.close()
+    
     return data.decode()
+    # Close the receiving socket after use
+    

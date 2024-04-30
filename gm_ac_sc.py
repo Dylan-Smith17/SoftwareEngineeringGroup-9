@@ -15,10 +15,9 @@ import sys
 from playsound import playsound
 from tkinter import messagebox, ttk
 from Player import Player
- 
 # Get the current working directory and set path for database access
 cwd = os.getcwd()
-sys.path.insert(0, cwd + '/DataBase')
+sys.path.insert(0, cwd)
 
 
 class PlayerActionScreen(tk.Tk):
@@ -91,7 +90,7 @@ class PlayerActionScreen(tk.Tk):
             players_data = {}
         players_list = []
         for player in players_data:
-            temp = Player(players_data[player], 0, "")
+            temp = Player(players_data[player], 0, "", False)
             players_list.append(temp)
         self.player_names = players_data
         self.players = players_list
@@ -175,22 +174,20 @@ class PlayerActionScreen(tk.Tk):
                 player.color = 'green'
                 self.alpha_green_players.append(player)
                 team_frame = self.frameGreen
+
     def display_players(self):
-        b_image = PhotoImage(file="B.png") #load the "B" image
-            # Check and display player names in team frames based on their data
+        b_image = PhotoImage(file="B.png")  # load the "B" image
         self.alpha_red_players = sorted(self.alpha_red_players, key=lambda player: player.score, reverse=True)
-        #print(self.alpha_red_players)
         self.alpha_green_players = sorted(self.alpha_green_players, key=lambda player: player.score, reverse=True)
-        #print(self.alpha_green_players)
         row = 2
         for r in self.alpha_red_players:
             temp_name = self.get_player_name(r.id)
             if r.isBase:
-                 label = Label(self.frameRed, image=b_image, text=temp_name + " : " + str(r.score), compound='left', bg="black", fg="white", font=self.helvetica_Medium)
-                 label.image = b_image  # Keep a reference to the image
+                label = Label(self.frameRed, image=b_image, text=temp_name + " : " + str(r.score), compound='left', bg="black", fg="white", font=self.helvetica_Medium)
+                label.image = b_image  # Keep a reference to the image
             else:
                 label = Label(self.frameRed, text=temp_name + " : " + str(r.score), bg="black", fg="white", font=self.helvetica_Medium)
-            Label(self.frameRed, text=temp_name + " : " + str(r.score), bg="black", fg="white", font=self.helvetica_Medium).grid(row=row, column=0)
+            label.grid(row=row, column=0)  # Add the label to the grid
             row += 1  # Increment row for the next player label
         row = 2
         for g in self.alpha_green_players:
@@ -200,9 +197,8 @@ class PlayerActionScreen(tk.Tk):
                 label.image = b_image
             else:
                 label = Label(self.frameGreen, text=temp_name + " : " + str(g.score), bg="black", fg="white", font=self.helvetica_Medium)
-            Label(self.frameGreen, text=temp_name + " : " + str(g.score), bg="black", fg="white", font=self.helvetica_Medium).grid(row=row, column=0)
+            label.grid(row=row, column=0)  # Add the label to the grid
             row += 1  # Increment row for the next player label
-
 
 
     def start_timer(self):
@@ -311,7 +307,6 @@ class PlayerActionScreen(tk.Tk):
                           try:
                             player = self.is_id(int(event_data[0]), self.alpha_red_players)
                             if player:  # Check if player is not None
-                                print('player base!')
                                 player.score += 100
                                 player.isBase = True
                             else: 

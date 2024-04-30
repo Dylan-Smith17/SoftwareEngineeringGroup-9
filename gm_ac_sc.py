@@ -381,6 +381,7 @@ class PlayerActionScreen(tk.Tk):
         # Update the label for the event window
         for widget in self.frameEventBoxCenter.winfo_children():
             widget.destroy()
+        self.frameEventBoxCenter.update_idletasks()  # Process all pending events
         Label(self.frameEventBoxCenter, text="PHOTON EVENTS", bg="black", font=self.helvetica_Medium, fg="white").grid(
             row=0, column=1, sticky="n")
 
